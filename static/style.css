@@ -158,6 +158,68 @@ body {
     color: #718096; /* Cinza para o status "Online" */
 }
 
+/* --- ESTILOS NOVOS PARA O MENU DO USUÁRIO --- */
+
+/* Foto do perfil no rodapé */
+.footer-profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+    border: 2px solid #FF8C00; /* Destaque laranja da paleta */
+}
+
+/* Torna o footer clicável */
+.sidebar-footer {
+    cursor: pointer;
+    /* position: relative; é necessário para o menu dropdown */
+    position: relative; 
+    transition: background-color 0.2s;
+}
+.sidebar-footer:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* Mesmo hover dos links */
+}
+
+/* Pega a div com as infos de texto para ocupar o espaço */
+.sidebar-footer .user-info {
+    flex: 1;
+}
+
+/* O menu dropdown de configurações */
+.user-menu-dropdown {
+    display: none; /* Escondido por padrão */
+    position: absolute; /* Posição flutuante */
+    bottom: 95px; /* Posição acima do rodapé (altura do footer + espaço) */
+    left: 16px; /* Alinhado com o padding da sidebar */
+    width: 228px; /* Largura (260px - 2*16px de padding) */
+    background-color: #FFFFFF; /* Fundo branco */
+    border-radius: 8px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); /* Sombra para cima */
+    z-index: 1000;
+    border: 1px solid #E2E8F0;
+    overflow: hidden;
+}
+
+/* Classe .show é adicionada via JS para mostrar o menu */
+.user-menu-dropdown.show {
+    display: block;
+}
+
+/* Links dentro do dropdown */
+.user-menu-dropdown a {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #2D3748; /* Cinza escuro */
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.user-menu-dropdown a:hover {
+    background-color: #F4F7F9; /* Cinza claro no hover */
+    color: #1E6043; /* Verde no hover */
+}
+
 /* --- Conteúdo Principal (Cor 60%) --- */
 .content {
     /* Ocupa todo o espaço horizontal restante ao lado da sidebar */

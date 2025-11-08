@@ -1,54 +1,61 @@
-{# 1. Carregar Bibliotecas de Tags: #}
-{# Habilita o uso das tags 'static' (necessário para { static }). #}
-{% load static %} 
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    {# 2. Bloco de Título: #}
-    {# Define um "espaço reservado" chamado 'title'. Templates filhos #}
-    {# (como index.html) podem substituir o conteúdo deste bloco #}
-    {# para definir o título específico da página. Se nenhum filho #}
-    {# o substituir, o texto padrão "Sistema EPI" será usado. #}
     <title>{% block title %}Sistema EPI{% endblock %}</title>
     
-    {# 3. Tag Static: #}
-    {# Gera a URL correta para o arquivo 'style.css' localizado na #}
-    {# pasta 'static' configurada no settings.py. É a forma correta #}
-    {# de linkar arquivos estáticos no Django. #}
     <link rel="stylesheet" href="{% static 'style.css' %}">
+
+
 </head>
 <body>
 
     <svg width="0" height="0" style="position:absolute">
         <defs>
-            <symbol id="icon-factory" ... </symbol>
-            <symbol id="icon-dashboard" ... </symbol>
-            <symbol id="icon-users-group" ... </symbol>
-            </defs>
+            <symbol id="icon-factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7-6-7 6v12Z"/>
+                <path d="M12 18v-6"/>
+                <path d="M12 8L4 4"/>
+                <path d="M12 8l8-4"/>
+                <path d="M16 4l-4 4-4-4"/>
+            </symbol>
+            <symbol id="icon-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </symbol>
+            <symbol id="icon-users-group" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <path d="M20 8v6M23 11h-6"></path>
+            </symbol>
+        </defs>
     </svg>
 
     <div class="container">
         
         <aside class="sidebar">
+            
             <div class="sidebar-header">
+                <svg class="icon"><use href="#icon-factory"></use></svg>
+                <div class="sidebar-header-text">
+                    <h3>PROJETIC</h3>
+                    <span>Controle de EPI</span>
                 </div>
+            </div>
+
             <nav class="sidebar-nav">
                 <ul>
-                    {# 4. Tag { if }: Condicional simples. #}
-                    {# Verifica se o *nome* da URL atual (obtido via 'request.resolver_match.url_name') #}
-                    {# é igual a 'index'. Se for verdadeiro, adiciona a classe CSS 'active' #}
-                    {# ao <li>, permitindo estilizar o link da página atual. #}
                     <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
-                        {# 5. Tag { url %}: Gera a URL para a view com nome 'index'. #}
                         <a href="{% url 'index' %}">
                             <svg class="icon"><use href="#icon-dashboard"></use></svg>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    {# Faz o mesmo para o link 'cadastro'. #}
                     <li class="{% if request.resolver_match.url_name == 'cadastro' %}active{% endif %}">
                         <a href="{% url 'cadastro' %}">
                             <svg class="icon"><use href="#icon-users-group"></use></svg>
@@ -57,23 +64,31 @@
                     </li>
                     </ul>
             </nav>
-            <div class="sidebar-footer">
+
+            <div class="user-menu-dropdown" id="user-menu">
+                <a href="#">Configurações de Perfil</a>
+                <a href="#">Trocar Senha</a>
+                <a href="#">Sair</a>
+            </div>
+
+            <div class="sidebar-footer" id="user-menu-trigger">
+                <img src="https://via.placeholder.com/40/FFFFFF/1E6043?Text=PV" alt="Foto Perfil" class="footer-profile-pic">
+                
+                <div class="user-info">
+                    <strong>Vanessa Caldeirão</strong>
+                    <span>Online</span>
                 </div>
+            </div>
         </aside>
 
         <main class="content">
             
-            {# 6. Bloco de Conteúdo Principal: #}
-            {# Define o "espaço reservado" principal chamado 'content'. #}
-            {# Templates filhos (como index.html, cadastro.html) colocarão #}
-            {# seu conteúdo específico aqui, substituindo este bloco. #}
             {% block content %}
             {% endblock %}
 
         </main>
     </div>
-
-    {# Link para o arquivo JavaScript usando a tag { static }. #}
+    
     <script src="{% static 'script.js' %}"></script>
 
 </body>

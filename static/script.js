@@ -97,3 +97,31 @@ document.addEventListener("DOMContentLoaded", function() {
         
     } 
 }); 
+
+// Espera o documento carregar
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Pega os elementos do DOM
+    const menuTrigger = document.getElementById("user-menu-trigger");
+    const userMenu = document.getElementById("user-menu");
+
+    // Garante que os elementos existem antes de adicionar o script
+    if (menuTrigger && userMenu) {
+        
+        // 1. Abre/Fecha o menu ao clicar no rodapé (gatilho)
+        menuTrigger.addEventListener("click", function(event) {
+            // Impede que o clique "vaze" para o 'window' e feche o menu
+            event.stopPropagation(); 
+            // Adiciona ou remove a classe .show
+            userMenu.classList.toggle("show");
+        });
+
+        // 2. Fecha o menu se o usuário clicar em qualquer outro lugar da tela
+        window.addEventListener("click", function(event) {
+            // Se o menu estiver aberto (.show) E o clique NÃO foi dentro dele
+            if (userMenu.classList.contains("show") && !userMenu.contains(event.target)) {
+                userMenu.classList.remove("show");
+            }
+        });
+    }
+});
