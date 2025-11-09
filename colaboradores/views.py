@@ -2,19 +2,23 @@
 # ================================
 from django.shortcuts import render, redirect, get_object_or_404 
 from .models import Colaborador
-from .forms import ColaboradorForm # <--- 1. IMPORTAMOS O SEU NOVO FORM
+# (EDITADO) Importa o ColaboradorForm que você criou
+from .forms import ColaboradorForm
 from django.db.models import Q
 from django.contrib import messages
+# (NOVO) Importa o "segurança" que tranca a view
+from django.contrib.auth.decorators import login_required
 
 # View (Função) para a página de LISTA de Colaboradores (index.html)
 # =================================================================
+@login_required # (NOVO) Tranca esta view
 def colaborador_lista(request):
     query = request.GET.get('q', '')
     
     if query:
         colaboradores = Colaborador.objects.filter(
             Q(nome_completo__icontains=query) |
-            Q(matricula__icontains=query) | # <- Corrigido de 'cpf' para 'matricula'
+            Q(matricula__icontains=query) |
             Q(funcao__icontains=query)
         ).order_by('-data_cadastro')
     else:
@@ -24,84 +28,74 @@ def colaborador_lista(request):
     colaboradores_ativos = colaboradores.filter(status='Ativo').count()
     colaboradores_inativos = total_colaboradores - colaboradores_ativos
 
+    # Passa as mensagens (para o modal de feedback de Edição/Exclusão)
     context = {
         'colaboradores_lista': colaboradores,
         'total_colaboradores': total_colaboradores,
         'colaboradores_ativos': colaboradores_ativos,
         'colaboradores_inativos': colaboradores_inativos,
-        'search_query': query 
+        'search_query': query,
+        'messages': messages.get_messages(request) # Passa as mensagens para o template
     }
     return render(request, 'index.html', context)
 
 
 # View (Função) para a página de CADASTRO de Colaboradores (cadastro.html)
 # ======================================================================
+@login_required # (NOVO) Tranca esta view
 def colaborador_novo(request):
     if request.method == 'POST':
-        # 2. Criamos o form passando os dados do POST
         form = ColaboradorForm(request.POST)
-        
-        # 3. O form.is_valid() VAI CHAMAR O SEU 'clean_matricula'
-        if form.is_valid():
-            # Se for válido (não é duplicado, é só número), salvamos
+        if form.is_valid(): # O form.is_valid() chama o clean_matricula
             form.save()
-            messages.success(request, 'Colaborador cadastrado com sucesso!')
-            form_vazio = ColaboradorForm() 
-            return render(request, 'cadastro.html', {'form': form_vazio})
-        # Se for INVÁLIDO (duplicado, etc.), o Django vai adicionar
-        # os erros ao 'form' e continuar para o 'render' abaixo
-    
+            
+            # Prepara um novo form vazio e envia a flag de sucesso
+            form_vazio = ColaboradorForm()
+            return render(request, 'cadastro.html', {
+                'form': form_vazio,
+                'cadastro_sucesso': True # Para o seu modal de sucesso
+            })
+        # Se for inválido, o form com os erros é passado abaixo
     else:
-        # 4. Se for GET, apenas criamos um form vazio
-        form = ColaboradorForm()
+        form = ColaboradorForm() # Cria um form vazio
 
-    # 5. Renderizamos o template passando o 'form'
-    #    (O form estará vazio ou conterá os erros e os dados que o usuário digitou)
+    # O 'form' (com erros ou vazio) é enviado para o template
     return render(request, 'cadastro.html', {'form': form})
 
 
 # View (Função) para a página de EDIÇÃO de Colaboradores (reutiliza cadastro.html)
 # ==============================================================================
+@login_required # (NOVO) Tranca esta view
 def colaborador_editar(request, id):
-    # Buscamos o colaborador que queremos editar
     colaborador = get_object_or_404(Colaborador, id=id)
-
+    
     if request.method == 'POST':
-        # 6. Criamos o form passando os dados do POST E a 'instance'
-        #    (Isso diz ao form que estamos EDITANDO)
         form = ColaboradorForm(request.POST, instance=colaborador)
-        
-        # 7. O 'clean_matricula' vai rodar e excluir o próprio
-        #    colaborador da checagem de duplicidade
         if form.is_valid():
             form.save()
-            messages.success(request, 'Colaborador atualizado com sucesso!')
-            return redirect('index')
-        # Se for inválido, continua para o 'render'
-    
+            messages.success(request, 'Colaborador alterado com sucesso!')
+            return redirect('index') # Redireciona para a lista
     else:
-        # 8. Se for GET, criamos o form preenchido com os dados da 'instance'
-        form = ColaboradorForm(instance=colaborador)
+        form = ColaboradorForm(instance=colaborador) # Pré-preenche
 
-    # 9. Renderizamos o template com o form (preenchido ou com erros)
-    #    E também passamos o 'colaborador' para o template saber que é modo "Editar"
     context = {
         'form': form,
-        'colaborador': colaborador 
+        'colaborador': colaborador
     }
     return render(request, 'cadastro.html', context)
 
 
 # View (Função) para EXCLUIR um Colaborador
 # =========================================
+@login_required # (NOVO) Tranca esta view
 def colaborador_excluir(request, id):
     colaborador = get_object_or_404(Colaborador, id=id)
     
-    # 10. (Importante) Protegemos a exclusão para aceitar apenas POST
+    # Adiciona verificação de POST para segurança do modal
     if request.method == 'POST':
         nome_colaborador = colaborador.nome_completo
         colaborador.delete()
         messages.success(request, f'Colaborador "{nome_colaborador}" foi excluído.')
     
-    # Redireciona para a lista (se for GET, apenas redireciona sem excluir)
+    # Redireciona de volta para a lista em qualquer caso
     return redirect('index')

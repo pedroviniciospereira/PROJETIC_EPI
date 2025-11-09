@@ -26,11 +26,12 @@ urlpatterns = [
     # Qualquer URL que comece com 'admin/' será gerenciada pelo admin.site.urls.
     path('admin/', admin.site.urls),
     
-    # Incluir URLs de aplicativos.
-    # Define a rota raiz do site ('').
-    # A função 'include()' diz ao Django para "passar" qualquer URL que chegue aqui 
-    # (neste caso, qualquer URL que não seja 'admin/') para ser processada pelo 
-    # arquivo 'urls.py' dentro do aplicativo 'colaboradores'.
-    # Isso mantém as URLs organizadas por aplicativo.
-    path('', include('colaboradores.urls')), 
+    # (NOVO) Faz o app 'core' controlar a raiz do site (/)
+    # Isso vai carregar as rotas 'home', 'login' e 'logout'
+    path('', include('core.urls')),
+    
+    # (EDITADO) Movemos seu sistema de colaboradores para '/sistema/'
+    # Agora, a lista de colaboradores será: /sistema/
+    # E o cadastro será: /sistema/cadastro/
+    path('sistema/', include('colaboradores.urls')),
 ]

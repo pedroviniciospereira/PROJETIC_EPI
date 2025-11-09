@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # ADICIONADO: Registra o aplicativo 'colaboradores' no projeto Django.
     'colaboradores',
+    "core",
 ]
 
 MIDDLEWARE = [
@@ -138,7 +139,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ADICIONADO: Lista de origens confiáveis para requisições POST (evita erro CSRF 403).
 # Necessário para o Codespace, pois o acesso não vem de 'localhost' puro.
+# Configurações de segurança para o Codespace
 CSRF_TRUSTED_ORIGINS = [
-    'https://localhost:8000', # Adicionado por causa do erro no log
-    'https://shadowy-broomstick-97w7w566499j2757x.github.dev' # Sua URL específica do Codespace
+    'https://*.github.dev',
+    'https://*.gitpod.io',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000'
 ]
+
+# (NOVO) CONFIGURAÇÕES DE LOGIN E LOGOUT
+# Para onde ir se o usuário não estiver logado
+LOGIN_URL = 'login' 
+# Para onde ir DEPOIS que o usuário fizer login
+LOGIN_REDIRECT_URL = 'index' 
+# Para onde ir DEPOIS que o usuário fizer logout
+LOGOUT_REDIRECT_URL = 'home'
