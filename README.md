@@ -1,49 +1,81 @@
 # PROJETIC_EPI: Sistema de Gerenciamento de EPIs 👷🚧
 
-## Visão Geral
+## 🚀 Visão Geral
 
-Este projeto é um Sistema Web para Gerenciamento de Equipamentos de Proteção Individual (EPIs), desenvolvido como parte do curso Técnico em Desenvolvimento de Sistemas. O objetivo é atender à necessidade de uma construtora fictícia que busca melhorar o controle e assegurar o uso de EPIs por seus colaboradores, solucionando problemas identificados em auditorias internas e aumentando a segurança no ambiente de trabalho.
+Este projeto é um Sistema Web completo para o Gerenciamento de Equipamentos de Proteção Individual (EPIs), desenvolvido como parte do curso Técnico em Desenvolvimento de Sistemas. O objetivo é atender à necessidade de uma construtora que busca modernizar seu controle de estoque, rastrear empréstimos e garantir a segurança e conformidade no ambiente de trabalho.
 
-O sistema visa controlar o empréstimo e devolução de EPIs para cada funcionário, permitindo um gerenciamento mais eficaz e auxiliando na conformidade com as normas regulamentadoras.
+O sistema é dividido em uma **página pública** (landing page) e um **painel de administração** privado e seguro, acessível apenas por login.
 
-## Funcionalidades Implementadas (Etapa 2)
+---
 
-* Cadastro de Colaboradores (Create): Permite adicionar novos funcionários ao sistema.
-* Listagem de Colaboradores (Read): Exibe todos os colaboradores cadastrados, com informações básicas e status. Inclui:
-    * Cards com estatísticas (Total, Ativos, Inativos).
-    * Barra de pesquisa por Nome, CPF ou Função.
-* Atualização de Colaboradores (Update): Permite editar os dados de um colaborador existente.
-* Exclusão de Colaboradores (Delete): Permite remover um colaborador do sistema.
-* Persistência de Dados: Todos os dados dos colaboradores são salvos em um banco de dados SQLite.
-* Interface Intuitiva: Design baseado nos wireframes fornecidos, com foco em usabilidade.
-* Máscara de CPF: Validação no frontend para o formato do CPF.
+## ✨ Funcionalidades Principais
 
-## Funcionalidades Planejadas (Próximas Etapas)
+O sistema é modularizado em quatro aplicativos principais:
 
-* Conforme for sendo pedido será sendo adicionado....
+### 🔐 Módulo de Autenticação (App: `core`)
+* **Landing Page:** Uma "Home Page" pública, moderna e visualmente atraente que descreve o propósito do projeto.
+* **Sistema de Login:** Uma página de login segura (`/login/`) para administradores do sistema.
+* **Proteção de Rotas:** O painel de gerenciamento (`/sistema/`) é 100% protegido. Usuários não logados são automaticamente redirecionados para a tela de login.
+* **Sistema de Logout:** Funcionalidade de "Sair" segura que redireciona o usuário de volta para a Home Page.
 
-## Tecnologias Utilizadas 🛠️
+### 👥 Módulo de Colaboradores (App: `colaboradores`)
+* **CRUD Completo:** Cadastro, Leitura, Edição e Exclusão de colaboradores.
+* **Validação de Matrícula:** Impede o cadastro de matrículas duplicadas.
+* **Busca e Filtro:** Permite pesquisar colaboradores por nome, matrícula ou função.
+* **Interface com Modais:** Utiliza modais de confirmação para exclusão e feedback de sucesso/erro, evitando a troca desnecessária de telas.
 
-* Backend: Python, Django 
-* Frontend: HTML, CSS, JavaScript
-* Banco de Dados: SQLite 3 (para desenvolvimento)
-* Controle de Versão: Git, GitHub
+### 📦 Módulo de Estoque (App: `equipamentos`)
+* **CRUD Completo:** Cadastro, Leitura, Edição e Exclusão de equipamentos (EPIs).
+* **Controle de Estoque:** Gerenciamento separado de `estoque_total` e `estoque_disponivel`.
+* **Validação de Negócio:**
+    * Impede o cadastro de equipamentos com o mesmo nome (`unique=True`).
+    * Impede o cadastro de equipamentos com estoque total igual a zero.
+* **Segurança:** Impede a exclusão de um equipamento se houver itens dele atualmente emprestados.
 
-## Configuração e Execução do Projeto 🚀
+### 🚚 Módulo de Empréstimos (App: `emprestimos`)
+* **Dashboard de KPIs:** Tela principal com indicadores visuais (KPIs) de empréstimos **Ativos**, **Atrasados** e **Devolvidos**.
+* **Sistema de "Carrinho" (FormSet):** Permite o registro de um novo empréstimo para um colaborador com **múltiplos itens e quantidades** de uma só vez.
+* **Controle de Estoque Ativo:**
+    * O formulário de "Novo Empréstimo" só exibe EPIs com `estoque_disponivel > 0`.
+    * Impede o empréstimo de uma quantidade maior do que a disponível.
+    * **Subtrai** do `estoque_disponivel` automaticamente quando um empréstimo é realizado.
+* **Sistema de Devolução Parcial:**
+    * Permite devolver partes de um item (ex: devolver 5 de 10 luvas).
+    * O sistema calcula automaticamente a "Quantidade Pendente".
+* **Histórico de Devoluções:**
+    * Cria um **log de histórico** para cada devolução parcial, registrando a quantidade, a data e o status (Devolvido, Danificado, Perdido).
+    * **Adiciona** ao `estoque_disponivel` automaticamente quando um item é "Devolvido" ou "Danificado".
+* **Atualização Automática de Status:**
+    * Itens de empréstimo mudam de `PENDENTE` para `CONCLUÍDO` quando a quantidade pendente chega a zero.
+    * Empréstimos mudam de `ATIVO` para `DEVOLVIDO` quando todos os seus itens são concluídos.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+* **Backend:** Python 3, Django 5.2
+* **Frontend:** HTML5, CSS3 (CSS Grid, Flexbox), JavaScript (ES6+)
+* **Banco de Dados:** SQLite 3 (para desenvolvimento)
+* **Controle de Versão:** Git, GitHub
+* **Bibliotecas JS:** Feather Icons (para ícones), AOS (para animações de scroll)
+
+---
+
+## 🚀 Configuração e Execução do Projeto
 
 Siga os passos abaixo para configurar e rodar o projeto localmente:
 
-1.  Pré-requisitos:
+1.  **Pré-requisitos:**
     * Python 3.8 ou superior instalado.
     * Git instalado.
 
-2.  Clone o Repositório:**
+2.  **Clone o Repositório:**
     ```bash
     git clone [https://github.com/pedroviniciospereira/PROJETIC_EPI.git](https://github.com/pedroviniciospereira/PROJETIC_EPI.git)
     cd PROJETIC_EPI
     ```
 
-3.  Crie e Ative um Ambiente Virtual:
+3.  **Crie e Ative um Ambiente Virtual:**
     * No Windows:
         ```bash
         python -m venv venv
@@ -54,41 +86,33 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
         python -m venv venv
         source venv/bin/activate
         ```
-    *(Você verá `(venv)` no início do seu terminal se a ativação funcionou).*
 
-4.  Instale as Dependências:
-    *(Certifique-se de que o ambiente virtual esteja ativo)*
+4.  **Instale as Dependências:**
+    *(Opcional: Se existir um arquivo `requirements.txt`, use `pip install -r requirements.txt`)*
     ```bash
     pip install django
     ```
-    *(Opcional: Se existir um arquivo `requirements.txt`, use `pip install -r requirements.txt`)*
 
-5.  Aplique as Migrações do Banco de Dados:
-    Este comando cria as tabelas necessárias no arquivo `db.sqlite3`.
+5.  **Aplique as Migrações do Banco de Dados:**
+    Este comando cria todas as tabelas (Colaborador, Equipamento, Empréstimo, etc.) no `db.sqlite3`.
     ```bash
+    python manage.py makemigrations
     python manage.py migrate
     ```
 
-6.  (Opcional) Crie um Superusuário:
-    Para acessar o painel de administração do Django (`/admin/`).
+6.  **Crie um Superusuário (Admin):**
+    Este é o usuário que você usará para acessar o painel `/sistema/`.
     ```bash
     python manage.py createsuperuser
     ```
-    *(Siga as instruções para definir nome de usuário, email e senha).*
+    *(Siga as instruções para definir nome de usuário e senha).*
 
-7.  *Execute o Servidor de Desenvolvimento:
-    * Para acesso local padrão:
-        ```bash
-        python manage.py runserver
-        ```
-    * Importante (Codespaces/Ambientes Remotos):** Use `0.0.0.0` para permitir conexões externas:
-        ```bash
-        python manage.py runserver 0.0.0.0:8000
-        ```
+7.  **Execute o Servidor de Desenvolvimento:**
+    ```bash
+    python manage.py runserver
+    ```
 
-8.  Acesse o Sistema:
-    Abra seu navegador e acesse `http://127.0.0.1:8000/` (ou o endereço fornecido pelo Codespace).
-
-## Pesquisa sobre Dockerfile 🐳
-
-Conforme solicitado na Etapa 2, foi realizada uma pesquisa sobre a integração de um `Dockerfile` ao projeto. Um Dockerfile permitiria "empacotar" a aplicação Django e suas dependências (Python, bibliotecas) em uma imagem de contêiner. Isso garante que o ambiente de execução seja consistente em diferentes máquinas (desenvolvimento, teste, produção), facilitando o deploy e evitando problemas de "na minha máquina funciona". A criação e integração do Dockerfile pode ser uma etapa futura do projeto.
+8.  **Acesse o Sistema:**
+    * Abra `http://127.0.0.1:8000/` para ver a **Home Page** pública.
+    * Acesse `http://127.0.0.1:8000/login/` para fazer o **Login**.
+    * Após o login, você será redirecionado para `http://127.0.0.1:8000/sistema/` (o painel de gerenciamento).
