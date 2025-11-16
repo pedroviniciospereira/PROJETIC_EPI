@@ -7,11 +7,9 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+# View (Função) para a página de LISTA de Colaboradores (index.html)
 # =================================================================
-# View (Função) para a página de LISTA (index.html)
-# (ESTA FUNÇÃO ESTAVA FALTANDO NO SEU CÓDIGO)
-# =================================================================
-@login_required
+@login_required 
 def colaborador_lista(request):
     query = request.GET.get('q', '')
     
@@ -34,52 +32,35 @@ def colaborador_lista(request):
         'colaboradores_ativos': colaboradores_ativos,
         'colaboradores_inativos': colaboradores_inativos,
         'search_query': query,
-        'messages': messages.get_messages(request) # Para os modais de exclusão/edição
+        # (CORRIGIDO) A linha 'messages' foi removida daqui
     }
     return render(request, 'index.html', context)
 
 
-# ======================================================================
-# View (Função) para a página de CADASTRO (cadastro.html)
-# (Esta é a sua nova view, que usa o script.js)
+# View (Função) para a página de CADASTRO de Colaboradores (cadastro.html)
 # ======================================================================
 @login_required 
 def colaborador_novo(request):
-    # Define o contexto inicial. Sempre teremos um form.
-    context = {'form': ColaboradorForm()}
-
     if request.method == 'POST':
         form = ColaboradorForm(request.POST)
         if form.is_valid():
             form.save()
             
-            # --- SUCESSO ---
-            # Envia a mensagem de sucesso que o seu JS 'setupFeedbackModal' espera
-            context['success_message'] = "Colaborador cadastrado com sucesso!"
-            # (Envia um form limpo para a página)
-            context['form'] = ColaboradorForm() 
-            
-        else:
-            # --- ERRO ---
-            # Se o form for inválido (ex: matrícula duplicada), envia a mensagem de erro
-            if form.errors:
-                # Pega o primeiro erro (ex: 'Esta matrícula já está cadastrada.')
-                first_error = next(iter(form.errors.values()))[0]
-                context['error_message'] = f"ERRO: {first_error}"
-            else:
-                context['error_message'] = "Erro desconhecido. Verifique os campos."
-            
-            # Envia o formulário PREENCHIDO (inválido) de volta para o usuário
-            context['form'] = form
+            form_vazio = ColaboradorForm()
+            return render(request, 'cadastro.html', {
+                'form': form_vazio,
+                'titulo_pagina': 'Cadastrar Novo Colaborador',
+                'cadastro_sucesso': True
+            })
+    else:
+        form = ColaboradorForm() 
 
-    # Renderiza o template UMA ÚNICA VEZ, com o contexto (seja de sucesso, erro, ou novo)
-    return render(request, 'cadastro.html', context)
+    return render(request, 'cadastro.html', {'form': form, 'titulo_pagina': 'Cadastrar Novo Colaborador'})
 
 
+# View (Função) para a página de EDIÇÃO de Colaboradores (reutiliza cadastro.html)
 # ==============================================================================
-# View (Função) para a página de EDIÇÃO (reutiliza cadastro.html)
-# ==============================================================================
-@login_required
+@login_required 
 def colaborador_editar(request, id):
     colaborador = get_object_or_404(Colaborador, id=id)
     
@@ -88,21 +69,21 @@ def colaborador_editar(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Colaborador alterado com sucesso!')
-            return redirect('index') # Redireciona para a lista
+            return redirect('index') 
     else:
-        form = ColaboradorForm(instance=colaborador) # Pré-preenche
+        form = ColaboradorForm(instance=colaborador) 
 
     context = {
         'form': form,
-        'colaborador': colaborador
+        'colaborador': colaborador,
+        'titulo_pagina': 'Editar Colaborador'
     }
     return render(request, 'cadastro.html', context)
 
 
-# =========================================
 # View (Função) para EXCLUIR um Colaborador
 # =========================================
-@login_required
+@login_required 
 def colaborador_excluir(request, id):
     colaborador = get_object_or_404(Colaborador, id=id)
     

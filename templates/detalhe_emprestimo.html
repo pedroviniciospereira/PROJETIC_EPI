@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Detalhe do Empréstimo #{{ emprestimo.id }}{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>Detalhe do Empréstimo #{{ emprestimo.id }}</h1>
+        <a href="{% url 'lista_emprestimo' %}" class="btn-submit btn-back">
+            <svg class="icon"><use href="#icon-arrow-left"></use></svg>
+            Voltar para a lista
+        </a>
+    </div>
+
+    <div class="modal-backdrop" id="feedbackModalBackdrop" style="display: none;"></div>
+    <div class="modal" id="feedbackModal" style="display: none;">
+        <div class="modal-header" id="feedbackModalHeader">
+            <h3 id="feedbackModalTitle"></h3>
+            <button class="modal-close" id="feedbackModalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="feedbackModalBody"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="feedbackModalOkBtn">OK</button>
+        </div>
+    </div>
+    
+    <div id="feedbackData" 
+         data-success-message="{% for message in messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }} {% endif %}{% endfor %}"
+         data-error-message="{% for message in messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }} {% endif %}{% endfor %}"
+    ></div>
+
+    <div class="form-card" style="margin-bottom: 24px;">
+        <div class="form-header">
+            <svg class="icon-large"><use href="#icon-users-group"></use></svg>
+            <h2>Informações do Empréstimo</h2>
+        </div>
+        
+        <div class="details-grid-3-col">
+            <div class="form-group">
+                <label>Colaborador</label>
+                <p>{{ emprestimo.colaborador.nome_completo }}</p>
+            </div>
+            <div class="form-group">
+                <label>Matrícula</label>
+                <p>{{ emprestimo.colaborador.matricula }}</p>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <p>
+                    <span class="status-badge status-{{ emprestimo.status|lower }}">
+                        {{ emprestimo.get_status_display }}
+                    </span>
+                </p>
+            </div>
+            <div class="form-group">
+                <label>Data do Empréstimo</label>
+                <p>{{ emprestimo.data_emprestimo|date:"d/m/Y H:i" }}</p>
+            </div>
+            <div class="form-group">
+                <label>Data Prev. Devolução</label>
+                <p>{{ emprestimo.data_prevista_devolucao|date:"d/m/Y" }}</p>
+            </div>
+            
+            {% if emprestimo.observacao %}
+            <div class="form-group grid-col-full">
+                <label>Observação</label>
+                <p class="details-observation">{{ emprestimo.observacao }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="form-card">
+        <div class="form-header">
+            <svg class="icon-large"><use href="#icon-helmet"></use></svg>
+            <h2>Itens do Empréstimo</h2>
+        </div>
+        
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Equipamento (EPI)</th>
+                        <th>Qtde. Emprestada</th>
+                        <th>Qtde. Pendente</th>
+                        <th>Status do Item</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item, form_devolucao, historico_item in itens_com_contexto %}
+                    <tr class="item-row">
+                        <td>{{ item.equipamento.nome }} (CA: {{ item.equipamento.ca|default:"N/A" }})</td>
+                        <td>{{ item.quantidade_emprestada }}</td>
+                        <td style="font-weight: 600;">{{ item.get_quantidade_pendente }}</td>
+                        <td>
+                            <span class="status-badge status-{{ item.status_item|lower }}">
+                                {{ item.get_status_item_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    
+                    {% if form_devolucao %}
+                    <tr class="devolucao-form-row">
+                        <td colspan="4">
+                            <form method="POST" action="{% url 'devolver_item_parcial' item.id %}" class="form-devolucao-parcial">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="{{ form_devolucao.quantidade_devolvida.id_for_label }}">
+                                        Devolver Quantidade:
+                                    </label>
+                                    {{ form_devolucao.quantidade_devolvida }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form_devolucao.status_devolucao.id_for_label }}">Registrar como:</label>
+                                    {{ form_devolucao.status_devolucao }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form_devolucao.observacao.id_for_label }}">Observação:</label>
+                                    {{ form_devolucao.observacao }}
+                                </div>
+                                <button type="submit" class="btn-submit btn-back">Registrar Devolução</button>
+                            </form>
+                            {% if form_devolucao.errors %}
+                                <div class="alert alert-error" style="margin-top: 10px;">
+                                    {{ form_devolucao.quantidade_devolvida.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    
+                    {% if historico_item %}
+                    <tr class="historico-row">
+                        <td colspan="4">
+                            <details class="historico-details">
+                                <summary>Ver Histórico de Devoluções ({{ historico_item.count }})</summary>
+                                <ul class="historico-lista">
+                                    {% for h in historico_item %}
+                                        <li>
+                                            <strong>{{ h.quantidade_devolvida }}x</strong> 
+                                            registrado como <strong>{{ h.get_status_devolucao_display }}</strong> 
+                                            em {{ h.data_devolucao|date:"d/m/Y H:i" }}
+                                            {% if h.observacao %}(Obs: {{ h.observacao }}){% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </details>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="data-table-empty">Nenhum item encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gerenciar Equipamentos{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>Gerenciar Equipamentos (EPIs)</h1>
+        <a href="{% url 'equipamento_novo' %}" class="btn-submit">
+            <svg class="icon"><use href="#icon-plus-circle"></use></svg>
+            Novo Equipamento
+        </a>
+    </div>
+
+    <div class="form-card">
+        <h2>Lista de Equipamentos</h2>
+
+        <div class="search-bar">
+            <form method="GET" action="{% url 'equipamento_lista' %}">
+                <input type="text" name="q" placeholder="Pesquisar por nome, C.A. ou categoria..." value="{{ search_query }}">
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome do Equipamento</th>
+                        <th>C.A.</th>
+                        <th>Categoria</th>
+                        <th>Estoque Total</th>
+                        <th>Disponível</th>
+                        <th class="actions">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in equipamentos_lista %}
+                    <tr>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.ca|default:"N/A" }}</td>
+                        <td>{{ item.get_categoria_display }}</td>
+                        <td>{{ item.estoque_total }}</td>
+                        <td style="font-weight: 600; color: {% if item.estoque_disponivel > 0 %}#38A169{% else %}#E53E3E{% endif %};">
+                            {{ item.estoque_disponivel }}
+                        </td>
+                        <td class="actions">
+                            <a href="{% url 'equipamento_editar' item.id %}">Editar</a>
+                            
+                            <a href="{% url 'equipamento_excluir' item.id %}"
+                               class="delete-trigger" 
+                               data-nome="{{ item.nome }}"
+                               style="color: #E53E3E;">
+                               Excluir
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="padding: 16px; text-align: center; color: #718096;">
+                            Nenhum equipamento encontrado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="deleteModalBackdrop" style="display: none;"></div>
+    <div class="modal" id="deleteModal" style="display: none;">
+        <div class="modal-header modal-header-danger">
+            <h3>Confirmar Exclusão</h3>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Você tem certeza que deseja excluir o equipamento <strong id="deleteModalColaboradorNome"></strong>?</p>
+            <p id="deleteModalWarning" style="color: #E53E3E; font-weight: 600; display: none;">
+                Atenção: Este item tem unidades emprestadas e não pode ser excluído.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <form id="deleteModalForm" method="POST">
+                {% csrf_token %}
+                <button type="button" class="btn-secondary" id="cancelModalBtn">Cancelar</button>
+                <button type="submit" class="btn-danger" id="deleteModalConfirmBtn">Sim, Excluir</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="feedbackModalBackdrop" style="display: none;"></div>
+    <div class="modal" id="feedbackModal" style="display: none;">
+        <div class="modal-header" id="feedbackModalHeader">
+            <h3 id="feedbackModalTitle"></h3>
+            <button class="modal-close" id="feedbackModalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="feedbackModalBody"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="feedbackModalOkBtn">OK</button>
+        </div>
+    </div>
+    
+    {% with all_messages=messages %}
+    <div id="feedbackData" 
+        data-success-message="{% for message in all_messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message|escapejs }} {% endif %}{% endfor %}"
+        data-error-message="{% for message in all_messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message|escapejs }} {% endif %}{% endfor %}"
+    ></div>
+    {% endwith %}
+
+{% endblock %}

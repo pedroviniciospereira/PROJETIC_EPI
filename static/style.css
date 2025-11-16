@@ -107,6 +107,15 @@ body {
     border-left: 4px solid #FF8C00;
 }
 
+/* Separador do Menu Lateral */
+.sidebar-nav li.separator {
+    padding: 16px 24px 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #A0AEC0;
+    text-transform: uppercase;
+}
+
 /* Rodapé da Sidebar (Informações do Usuário) */
 .sidebar-footer {
     padding: 24px;
@@ -190,7 +199,6 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     padding: 32px;
-    /* (Removido max-width: 800px para a lista) */
 }
 .form-header {
     display: flex;
@@ -216,9 +224,18 @@ body {
 .form-group .required {
     color: #E53E3E;
 }
+.form-group small {
+    color: #718096;
+    margin-top: 8px;
+    display: block;
+    font-size: 0.875rem;
+}
 
 /* Inputs e Selects */
 .form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group textarea,
 .form-group select {
     width: 100%;
     padding: 12px;
@@ -227,14 +244,19 @@ body {
     font-size: 1rem;
     background-color: #FFFFFF;
     transition: border-color 0.2s, box-shadow 0.2s; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 .form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
+.form-group input[type="number"]:focus,
+.form-group textarea:focus,
 .form-group select:focus {
     outline: none;
     border-color: #1E6043;
     box-shadow: 0 0 0 2px rgba(30, 96, 67, 0.2); 
 }
-.form-group input::placeholder {
+.form-group input::placeholder,
+.form-group textarea::placeholder {
     color: #A0AEC0;
 }
 .form-group select {
@@ -245,6 +267,11 @@ body {
 }
 .form-group option {
     color: #1A202C;
+}
+.form-group input:disabled {
+    background-color: #F4F7F9;
+    color: #718096;
+    cursor: not-allowed;
 }
 
 /* Ações do Formulário (Botões) */
@@ -305,22 +332,12 @@ body {
 }
 
 
-/* --- Estilos da Lista (index.html) --- */
+/* --- Estilos da Lista (index.html, equipamento_lista.html) --- */
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-}
-.page-header .btn-submit {
-    display: inline-flex;
-    align-items: center;
-}
-.page-header .btn-submit .icon {
-    width: 18px;
-    height: 18px;
-    stroke: #FFF;
-    margin-right: 8px;
 }
 .stats-grid {
     display: grid;
@@ -351,13 +368,25 @@ body {
 .search-bar {
     margin-bottom: 24px;
 }
+/* (NOVO) Flex para barra de pesquisa com filtros */
+.search-bar form {
+    display: flex;
+    gap: 1rem;
+}
 .search-bar input {
     width: 100%;
+    flex-grow: 1; /* Input ocupa o espaço principal */
     padding: 12px 16px;
     border: 1px solid #CBD5E0;
     border-radius: 6px;
     font-size: 1rem;
     background-color: #FFFFFF;
+}
+.search-bar select {
+    flex-shrink: 0; /* Select não encolhe */
+}
+.search-bar button {
+    flex-shrink: 0; /* Botão não encolhe */
 }
 .search-bar input:focus {
     outline: none;
@@ -394,6 +423,7 @@ body {
 }
 .data-table .actions {
     text-align: right;
+    white-space: nowrap; /* Impede que os links "Editar/Excluir" quebrem linha */
 }
 .data-table .actions a {
     margin-left: 12px;
@@ -419,27 +449,8 @@ body {
         align-items: center;
     }
     .sidebar-nav {
-        display: flex;
-        padding: 0;
+        display: none; /* Esconde a nav principal em telas pequenas */
     }
-    .sidebar-nav ul {
-        display: flex;
-    }
-    .sidebar-nav li a {
-        padding: 16px;
-        border-left: none;
-        border-bottom: 4px solid transparent;
-    }
-    .sidebar-nav li.active a {
-        border-left: none;
-        border-bottom: 4px solid #FF8C00;
-    }
-    .sidebar-nav span {
-        display: none;
-    }
-     .sidebar-nav li a .icon {
-         margin-right: 0;
-     }
     .sidebar-header {
         border-bottom: none;
         padding: 16px;
@@ -461,23 +472,18 @@ body {
     .stats-grid {
         grid-template-columns: 1fr; /* 1 coluna */
     }
+    /* Barra de pesquisa em telas pequenas */
+    .search-bar form {
+        flex-direction: column;
+    }
 }
 
 
 /* =========================================
-   (NOVO) ESTILOS DO MENU E MODAL
+   ESTILOS DOS MODAIS
    ========================================= */
 
-/* (NOVO) Separador do Menu Lateral */
-.sidebar-nav li.separator {
-    padding: 16px 24px 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #A0AEC0;
-    text-transform: uppercase;
-}
-
-/* (NOVO) Estilos do Modal de Exclusão */
+/* Fundo do Modal */
 .modal-backdrop {
     position: fixed;
     top: 0; left: 0;
@@ -485,6 +491,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
+/* Janela do Modal */
 .modal {
     position: fixed;
     top: 50%; left: 50%;
@@ -539,7 +546,8 @@ body {
     font-weight: 700;
     border: none;
 }
-/* Botão Secundário (Cancelar) */
+
+/* Botões do Modal */
 .btn-secondary {
     background-color: #A0AEC0;
     color: #FFFFFF;
@@ -547,7 +555,6 @@ body {
 .btn-secondary:hover {
     background-color: #718096;
 }
-/* Botão de Perigo (Excluir) */
 .btn-danger {
     background-color: #E53E3E;
     color: #FFFFFF;
@@ -556,35 +563,29 @@ body {
     background-color: #C53030;
 }
 
-/* =========================================
-   (NOVO) ESTILOS DO MODAL DE FEEDBACK
-   ========================================= */
-
-/* (O modal de feedback reutiliza 90% dos estilos do modal de exclusão) */
-
-/* (NOVO) Cabeçalho de Sucesso (Verde) */
+/* Cabeçalho de Sucesso (Modal Feedback) */
 .modal-header-success {
-    background-color: #C6F6D5; /* Fundo verde claro */
-    color: #22543D; /* Texto verde escuro */
+    background-color: #C6F6D5;
+    color: #22543D;
     border-bottom: 1px solid #9AE6B4;
 }
 .modal-header-success .modal-close {
     color: #22543D;
 }
 
-/* (NOVO) Cabeçalho de Falha (Vermelho) */
+/* Cabeçalho de Falha (Modal Feedback e Exclusão) */
 .modal-header-danger {
-    background-color: #FED7D7; /* Fundo vermelho claro */
-    color: #822727; /* Texto vermelho escuro */
+    background-color: #FED7D7;
+    color: #822727;
     border-bottom: 1px solid #FEB2B2;
 }
 .modal-header-danger .modal-close {
     color: #822727;
 }
 
-/* (NOVO) Botão OK no rodapé do modal de feedback */
+/* Botão OK no modal de feedback */
 #feedbackModal .modal-footer .btn-secondary {
-    background-color: #1E6043; /* Botão OK verde */
+    background-color: #1E6043;
     color: #FFF;
 }
 #feedbackModal .modal-footer .btn-secondary:hover {
@@ -592,121 +593,224 @@ body {
 }
 
 /* =========================================
-   (NOVO) ESTILOS DO MENU V2 (Baseado na Imagem)
+   (NOVO) ESTILOS DO MÓDULO DE EMPRÉSTIMOS
    ========================================= */
 
-/* Esconde a 'ul' do menu antigo (baseado em .sidebar-nav) */
-/* (Isto pode ser removido, mas é mais seguro deixar) */
-.sidebar-nav ul {
-    display: none;
-}
-
-/* A Nova Lista de Menu */
-.sidebar-menu {
-    flex: 1; /* Faz o menu ocupar o espaço até o rodapé */
-    list-style: none;
-    padding: 16px 0;
-    margin: 0;
-}
-
-/* O Título do Grupo (ex: "COLABORADORES") */
-.sidebar-menu .menu-header {
-    padding: 16px 24px 8px 24px;
-    font-size: 0.75rem; /* 12px */
+/* Badges de Status (para lista e detalhes) */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
     font-weight: 600;
-    color: #A0AEC0; /* Cinza claro (do seu tema) */
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: #fff;
+    display: inline-block; /* Garante o padding correto */
+}
+.status-ativo { background-color: #3B82F6; } /* Azul */
+.status-atrasado { background-color: #E53E3E; } /* Vermelho */
+.status-devolvido { background-color: #38A169; } /* Verde */
+
+/* Botão "Voltar" (para os page-headers) */
+.btn-back {
+    background-color: #718096; /* Cinza */
+    /* Herda o resto do .btn-submit */
+}
+.btn-back:hover {
+    background-color: #4A5568; /* Cinza mais escuro */
 }
 
-/* Os Links do Menu */
-.sidebar-menu li a {
+/* --- Estilos do Formulário de Novo Empréstimo --- */
+
+/* Grid para os campos (ex: Colaborador e Data) */
+.form-grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+/* Grid para os itens do "carrinho" */
+.item-form-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+    gap: 16px;
+    align-items: flex-end;
+}
+/* Container para cada item do "carrinho" */
+.item-form-container {
+    padding: 16px;
+    border: 1px dashed #CBD5E0;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+/* Alinhamento do checkbox "Remover" */
+.item-form-delete {
     display: flex;
     align-items: center;
-    padding: 14px 24px;
-    margin: 4px 16px; /* 4px em cima/baixo, 16px dos lados */
-    text-decoration: none;
-    color: #E2E8F0; /* Texto do link (branco-cinza) */
+    padding-bottom: 10px; /* Alinha com os inputs */
+}
+.item-form-delete label {
+    margin: 0 10px 0 0;
+}
+
+/* Divisor horizontal */
+.form-divider {
+    margin: 32px 0;
+    border: 0;
+    border-top: 1px solid #E2E8F0;
+}
+
+/* Botão "Adicionar Item" */
+.btn-add-item {
+    background-color: #3B82F6; /* Azul */
+    margin-top: 16px;
+}
+.btn-add-item:hover {
+    background-color: #2563EB;
+}
+
+/* Rodapé de Ações do Formulário (separado) */
+.form-actions-separator {
+    border-top: 1px solid #E2E8F0;
+    margin-top: 32px;
+    padding-top: 32px;
+}
+
+/* --- Estilos da Tela de Detalhes --- */
+
+/* Grid para os detalhes (info do colaborador) */
+.details-grid-3-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+}
+/* Faz um item da grid ocupar todas as colunas */
+.grid-col-full {
+    grid-column: 1 / -1;
+}
+/* Estilo para os <p> que mostram os dados */
+.details-grid-3-col .form-group p {
+    font-size: 1.1rem;
     font-weight: 500;
-    border-radius: 8px; /* Cantos arredondados */
-    transition: background-color 0.2s, color 0.2s;
+    word-break: break-word; /* Quebra o texto se for muito longo */
+}
+/* Estilo para a observação */
+.details-observation {
+    white-space: pre-wrap; /* Respeita as quebras de linha */
 }
 
-/* Ícones (Boxicons) dentro dos links */
-.sidebar-menu li a i {
-    font-size: 20px; /* Tamanho do ícone */
-    margin-right: 16px; /* Espaçamento entre ícone e texto */
-    width: 20px; /* Garante alinhamento */
-    text-align: center;
+/* Media Query para os grids em telas pequenas */
+@media (max-width: 768px) {
+    .form-grid-2-col,
+    .item-form-grid,
+    .details-grid-3-col {
+        grid-template-columns: 1fr; /* 1 coluna */
+    }
+    .item-form-grid {
+        gap: 0px; /* Remove o gap para não ficar estranho */
+    }
+    .item-form-delete {
+        padding-top: 16px; /* Adiciona espaço em cima */
+        padding-bottom: 0px;
+    }
 }
-
-/* Efeito HOVER (quando passa o mouse) */
-.sidebar-menu li a:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Fundo branco leve */
-    color: #FFFFFF; /* Texto branco puro */
-}
-
-/* Efeito ACTIVE (página atual) - O da sua imagem! */
-.sidebar-menu li.active a {
-    background-color: #2D8A5F; /* Verde mais claro (ajuste se precisar) */
-    color: #FFFFFF;
-    font-weight: 600;
-}
-
 
 /* =========================================
-   (AJUSTES) Ícones do Header/Footer (para Boxicons)
+   (NOVO) ESTILOS DA DEVOLUÇÃO DE ITENS
    ========================================= */
 
-/* Remove estilos de SVG e aplica a fontes de ícone */
-.icon-large, .icon-profile, .icon-arrow-toggle {
-    stroke: none;
-    line-height: 1;
+/* Faz o formulário de devolução ficar na mesma linha (inline) */
+.form-devolucao {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* Limita a largura do dropdown */
+.form-devolucao select {
+    width: 150px; 
+    padding: 8px; /* Deixa o select menor */
+}
+/* Faz o botão ficar menor */
+.form-devolucao button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    flex-shrink: 0; /* Impede o botão de encolher */
+}
+/* =========================================
+   (NOVO) ESTILOS DA DEVOLUÇÃO PARCIAL
+   ========================================= */
+
+/* Linha principal do item na tabela */
+.data-table .item-row td {
+    border-bottom: 2px solid #CBD5E0; /* Linha mais grossa */
 }
 
-.icon-large {
-    font-size: 28px;
-    margin-right: 12px;
-    color: #FF8C00; /* Laranja */
+/* Linha do formulário de devolução */
+.devolucao-form-row td {
+    background-color: #F4F7F9; /* Fundo cinza claro */
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
-.icon-profile {
-    font-size: 40px;
-    margin-right: 12px;
-    color: #FF8C00; /* Laranja */
-    border-radius: 50%;
+.form-devolucao-parcial {
+    display: flex;
+    align-items: flex-end; /* Alinha pela base */
+    gap: 16px;
+    flex-wrap: wrap; /* Permite quebrar linha em telas pequenas */
 }
-.icon-arrow-toggle {
-    font-size: 20px;
-    margin-left: auto;
-    color: #A0AEC0;
-    transition: transform 0.2s ease;
+.form-devolucao-parcial .form-group {
+    margin-bottom: 0;
 }
-.icon-arrow-toggle.rotated {
-    transform: rotate(180deg);
+.form-devolucao-parcial label {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.form-devolucao-parcial input,
+.form-devolucao-parcial select {
+    padding: 8px; /* Deixa os campos menores */
+    font-size: 0.9rem;
+}
+.form-devolucao-parcial input[type="number"] {
+    width: 100px;
+}
+.form-devolucao-parcial select {
+    width: 130px;
+}
+.form-devolucao-parcial input[type="text"] {
+    flex-grow: 1; /* Campo de observação ocupa o espaço */
+    min-width: 150px;
+}
+.form-devolucao-parcial button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
 }
 
-/* Remove a borda laranja antiga do ícone de perfil */
-.footer-profile-pic {
-    border: none; 
-}
 
-/* === Corrige cor e sublinhado dos links do menu lateral === */
-.sidebar-menu li a,
-.sidebar-menu li a:visited {
-    color: #E2E8F0; /* mesma cor dos não visitados */
-    text-decoration: none; /* remove o sublinhado */
+/* Linha do histórico */
+.historico-row td {
+    background-color: #F4F7F9;
+    padding-bottom: 20px;
+    /* Borda pontilhada acima */
+    border-top: 1px dashed #CBD5E0; 
 }
-
-.sidebar-menu li a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #FFFFFF;
-    text-decoration: none;
+.historico-details {
+    font-size: 0.9rem;
 }
-
-.sidebar-menu li.active a,
-.sidebar-menu li.active a:visited {
-    background-color: #2D8A5F;
-    color: #FFFFFF;
+.historico-details summary {
+    cursor: pointer;
     font-weight: 600;
-    text-decoration: none;
+    color: var(--cor-primaria, #1E6043);
+}
+.historico-lista {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+.historico-lista li {
+    margin-bottom: 5px;
+    color: #4A5568;
+}
+
+/* (NOVO) Badge de status para PENDENTE/CONCLUIDO */
+.status-pendente {
+    background-color: #F59E0B; /* Amarelo/Laranja */
+}
+.status-concluido {
+    background-color: #38A169; /* Verde (igual ao devolvido) */
 }

@@ -1,19 +1,38 @@
-// Chamar as funções
-setupMatriculaMask();
-setupUserMenu();
-setupDeleteModal();
-setupFeedbackModal();
+// Função principal que é executada quando o DOM está pronto
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Tenta configurar a lógica da matrícula (substituindo o CPF)
+    setupMatriculaInput();
 
+    // Tenta configurar o menu do usuário (roda em todas as páginas)
+    setupUserMenu();
+    
+    // Tenta configurar o modal de exclusão (nas páginas de lista)
+    setupDeleteModal();
+
+    // Tenta configurar o modal de feedback (nas páginas de lista e cadastro)
+    setupFeedbackModal();
+    
+    // (NOVO) Tenta configurar o formulário de "carrinho" (só na pág. novo_emprestimo)
+    setupEmprestimoFormset();
+
+    // (NOVO) Renderiza todos os ícones Feather Icons (ex: <svg class="icon">)
+    // Garante que a biblioteca 'feather' foi carregada
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
 
 /**
- * Procura pelo campo MATRICULA e força a ser apenas números.
+ * Procura pelo campo MATRICULA e força a aceitar apenas números
  */
-function setupMatriculaMask() {
-    // O Django gera o ID como 'id_nome-do-campo'
-    const matriculaInput = document.getElementById("id_matricula");
+function setupMatriculaInput() {
+    // Usamos o ID que definimos no forms.py
+    const matriculaInput = document.getElementById("matricula"); 
+    
     if (matriculaInput) {
         matriculaInput.addEventListener('input', function(e) {
-            // Remove qualquer coisa que não seja dígito
+            // Remove qualquer coisa que não seja um dígito
             e.target.value = e.target.value.replace(/\D/g, '');
         });
     }
@@ -23,69 +42,93 @@ function setupMatriculaMask() {
  * Configura o menu dropdown do usuário na sidebar
  */
 function setupUserMenu() {
-    const menuTrigger = document.getElementById("user-menu-toggle");
-    const userMenu = document.getElementById("user-menu-dropdown");
-    const arrow = document.querySelector('.icon-arrow-toggle');
+    const menuTrigger = document.getElementById("user-menu-trigger");
+    const userMenu = document.getElementById("user-menu");
+
     if (menuTrigger && userMenu) {
+        
+        // 1. Abre/Fecha o menu ao clicar no gatilho
         menuTrigger.addEventListener("click", function(event) {
             event.stopPropagation(); 
             userMenu.classList.toggle("show");
-            if (arrow) arrow.classList.toggle('rotated');
         });
+
+        // 2. Fecha o menu se clicar fora
         window.addEventListener("click", function(event) {
             if (userMenu.classList.contains("show") && !userMenu.contains(event.target)) {
                 userMenu.classList.remove("show");
-                if (arrow) arrow.classList.remove('rotated');
             }
         });
     }
 }
 
+
 /**
- * Configura os gatilhos e ações do modal de exclusão na 'index.html'
+ * Configura os gatilhos e ações do modal de exclusão
+ * (Funciona para Colaboradores e Equipamentos)
  */
 function setupDeleteModal() {
-    // (Esta função ainda não está sendo usada, mas a deixamos pronta)
     const modal = document.getElementById('deleteModal');
-    if (!modal) return; // Não estamos na página 'index'
-    
     const backdrop = document.getElementById('deleteModalBackdrop');
     const deleteForm = document.getElementById('deleteModalForm');
     const collaboratorNameEl = document.getElementById('deleteModalColaboradorNome');
     const closeBtn = document.getElementById('closeModalBtn');
     const cancelBtn = document.getElementById('cancelModalBtn');
-    const deleteTriggers = document.querySelectorAll('.delete-trigger');
+    const deleteTriggers = document.querySelectorAll('.delete-trigger'); // Pega TODOS os botões de excluir
 
-    if (!deleteTriggers.length || !backdrop || !deleteForm) {
-        return;
+    if (!modal || !deleteTriggers.length || !backdrop || !deleteForm) {
+        return; // Não está em uma página de lista, então pare
     }
-    // ... (resto da lógica do modal de exclusão) ...
+
+    const openModal = (url, nome) => {
+        deleteForm.action = url; 
+        collaboratorNameEl.textContent = nome; 
+        modal.style.display = 'block';
+        backdrop.style.display = 'block';
+    };
+
+    const closeModal = () => {
+        modal.style.display = 'none';
+        backdrop.style.display = 'none';
+    };
+
+    deleteTriggers.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            const url = this.href;
+            const nome = this.getAttribute('data-nome');
+            openModal(url, nome);
+        });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', closeModal);
 }
 
 
 /**
  * Verifica se há mensagens de feedback (sucesso ou erro)
- * na página 'cadastro.html' e exibe o modal.
+ * e exibe o modal. (Funciona em qualquer página que tenha o modal)
  */
 function setupFeedbackModal() {
     const dataDiv = document.getElementById('feedbackData');
     const modal = document.getElementById('feedbackModal');
-    
-    // (IMPORTANTE) Se não for a página de cadastro, não faça nada.
-    // Isso previne erros no console em outras páginas.
-    if (!dataDiv || !modal) {
-        return; 
-    }
-
-    const successMessage = dataDiv.dataset.successMessage;
-    const errorMessage = dataDiv.dataset.errorMessage;
-
     const backdrop = document.getElementById('feedbackModalBackdrop');
     const header = document.getElementById('feedbackModalHeader');
     const title = document.getElementById('feedbackModalTitle');
     const body = document.getElementById('feedbackModalBody');
     const closeBtn = document.getElementById('feedbackModalCloseBtn');
     const okBtn = document.getElementById('feedbackModalOkBtn');
+
+    if (!dataDiv || !modal || !backdrop) {
+        return; // Não está em uma página com modal de feedback
+    }
+
+    // Pega as mensagens dos atributos data-*
+    // (O 'trim()' remove espaços em branco)
+    const successMessage = dataDiv.dataset.successMessage.trim();
+    const errorMessage = dataDiv.dataset.errorMessage.trim();
 
     const closeModal = () => {
         modal.style.display = 'none';
@@ -97,7 +140,7 @@ function setupFeedbackModal() {
     if (okBtn) okBtn.addEventListener('click', closeModal);
     if (backdrop) backdrop.addEventListener('click', closeModal);
 
-    // Mostra o modal de SUCESSO
+    // Verifica se há mensagem de SUCESSO
     if (successMessage) {
         title.textContent = 'Sucesso!';
         body.textContent = successMessage;
@@ -105,12 +148,46 @@ function setupFeedbackModal() {
         modal.style.display = 'block';
         backdrop.style.display = 'block';
     } 
-    // Mostra o modal de ERRO
+    // Senão, verifica se há mensagem de ERRO
     else if (errorMessage) {
-        title.textContent = 'Falha no Cadastro';
-        body.textContent = errorMessage;
+        title.textContent = 'Falha';
+        body.textContent = errorMessage; // Ex: "ERRO: Esta matrícula já está cadastrada."
         header.classList.add('modal-header-danger');
         modal.style.display = 'block';
         backdrop.style.display = 'block';
     }
+}
+
+/**
+ * (NOVO) Configura a lógica de adicionar/remover
+ * formulários no "carrinho" da página de Novo Empréstimo.
+ */
+function setupEmprestimoFormset() {
+    const container = document.getElementById('item-forms-container');
+    const addButton = document.getElementById('add-item-btn');
+    const template = document.getElementById('empty-form-template');
+    const totalFormsInput = document.getElementById('id_itens-TOTAL_FORMS');
+
+    // Se não estamos na página 'novo_emprestimo.html', saia da função
+    if (!container || !addButton || !template || !totalFormsInput) {
+        return;
+    }
+
+    // Pega o número atual de formulários
+    let formCount = parseInt(totalFormsInput.value, 10);
+
+    addButton.addEventListener('click', function() {
+        // Clona o template
+        // Substitui o prefixo '__prefix__' pelo número do novo formulário
+        const newFormHtml = template.innerHTML.replace(/__prefix__/g, formCount);
+        const newElement = document.createElement('div');
+        newElement.innerHTML = newFormHtml;
+        
+        // Adiciona o novo formulário ao container
+        container.appendChild(newElement.firstElementChild); // Adiciona o .item-form-container
+        
+        // Incrementa o contador total de formulários
+        formCount++;
+        totalFormsInput.value = formCount;
+    });
 }

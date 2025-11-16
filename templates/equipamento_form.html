@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>{{ titulo_pagina }}</h1>
+        
+        <a href="{% url 'equipamento_lista' %}" class="btn-submit btn-back">
+            <svg class="icon"><use href="#icon-arrow-left"></use></svg>
+            Voltar para a lista
+        </a>
+    </div>
+
+    <div class="form-card">
+        <div class="form-header">
+            <svg class="icon-large"><use href="#icon-helmet"></use></svg>
+            <h2>Informações do Equipamento</h2>
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div class="messages">
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if form.errors %}
+            <div class="messages">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-error">
+                            <strong>{{ field.label }}:</strong> {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+        <form id="equipamento-form" method="POST">
+            {% csrf_token %} 
+            
+            <div class="form-grid-2-col">
+                <div class="form-group grid-col-full">
+                    <label for="id_nome_equipamento">Nome do Equipamento <span class="required">*</span></label>
+                    {{ form.nome }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_categoria">Categoria <span class="required">*</span></label>
+                    {{ form.categoria }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_ca">Nº do C.A. (Certificado de Aprovação)</label>
+                    {{ form.ca }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_estoque_total">Estoque Total <span class="required">*</span></label>
+                    {{ form.estoque_total }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_estoque_disponivel">Estoque Disponível <span class="required">*</span></label>
+                    {{ form.estoque_disponivel }}
+                    
+                    {% if equipamento %}
+                    <small>
+                        O estoque disponível é atualizado automaticamente pelos empréstimos.
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <svg class="icon"><use href="#icon-save"></use></svg>
+                    Salvar Equipamento
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-backdrop" id="feedbackModalBackdrop" style="display: none;"></div>
+    <div class="modal" id="feedbackModal" style="display: none;">
+        <div class="modal-header" id="feedbackModalHeader">
+            <h3 id="feedbackModalTitle"></h3>
+            <button class="modal-close" id="feedbackModalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="feedbackModalBody"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="feedbackModalOkBtn">OK</button>
+        </div>
+    </div>
+    
+    {% with all_messages=messages %}
+    <div id="feedbackData" 
+        data-success-message="{% for message in all_messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message|escapejs }} {% endif %}{% endfor %}"
+        data-error-message="{% for message in all_messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message|escapejs }} {% endif %}{% endfor %}"
+    ></div>
+    {% endwith %}
+
+{% endblock %}

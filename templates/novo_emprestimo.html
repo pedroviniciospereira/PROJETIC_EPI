@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>{{ titulo_pagina }}</h1>
+        <a href="{% url 'lista_emprestimo' %}" class="btn-submit btn-back">
+            <svg class="icon"><use href="#icon-arrow-left"></use></svg>
+            Voltar para a lista
+        </a>
+    </div>
+
+    <div class="form-card">
+        
+        <form id="emprestimo-form" method="POST">
+            {% csrf_token %}
+            
+            <div class="form-header">
+                <svg class="icon-large"><use href="#icon-users-group"></use></svg>
+                <h2>1. Selecione o Colaborador e a Data</h2>
+            </div>
+
+            {% if messages %}
+                <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'error' }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="form-grid-2-col">
+                <div class="form-group grid-col-full">
+                    <label for="id_colaborador">Colaborador <span class="required">*</span></label>
+                    {{ form.colaborador }}
+                    {{ form.colaborador.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="id_data_prevista_devolucao">Data Prev. Devolução <span class="required">*</span></label>
+                    {{ form.data_prevista_devolucao }}
+                    {{ form.data_prevista_devolucao.errors }}
+                </div>
+                <div class="form-group grid-col-full">
+                    <label for="id_observacao">Observação (Opcional)</label>
+                    {{ form.observacao }}
+                    {{ form.observacao.errors }}
+                </div>
+            </div>
+
+            <hr class="form-divider">
+
+            <div class="form-header">
+                <svg class="icon-large"><use href="#icon-helmet"></use></svg>
+                <h2>2. Adicione os Equipamentos</h2>
+            </div>
+            
+            {{ formset.management_form }}
+            
+            <div id="item-forms-container">
+                {% for item_form in formset %}
+                    <div class="item-form-container">
+                        {% if item_form.non_field_errors %}
+                            <div class="alert alert-error">{{ item_form.non_field_errors }}</div>
+                        {% endif %}
+                        
+                        <div class="item-form-grid">
+                            <div class="form-group">
+                                <label for="{{ item_form.equipamento.id_for_label }}">Equipamento <span class="required">*</span></label>
+                                {{ item_form.equipamento }}
+                                {{ item_form.equipamento.errors }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ item_form.quantidade_emprestada.id_for_label }}">Qtde <span class="required">*</span></label>
+                                {{ item_form.quantidade_emprestada }}
+                                {{ item_form.quantidade_emprestada.errors }}
+                            </div>
+                            <div class="item-form-delete">
+                                {% if formset.can_delete %}
+                                    <label for="{{ item_form.DELETE.id_for_label }}">Remover:</label>
+                                    {{ item_form.DELETE }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button type="button" id="add-item-btn" class="btn-submit btn-add-item">
+                <svg class="icon"><use href="#icon-plus-circle"></use></svg>
+                Adicionar outro item
+            </button>
+
+            <div id="empty-form-template" style="display: none;">
+                <div class="item-form-container">
+                    <div class="item-form-grid">
+                        <div class="form-group">
+                            <label for="{{ formset.empty_form.equipamento.id_for_label }}">Equipamento <span class="required">*</span></label>
+                            {{ formset.empty_form.equipamento }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ formset.empty_form.quantidade_emprestada.id_for_label }}">Qtde <span class="required">*</span></label>
+                            {{ formset.empty_form.quantidade_emprestada }}
+                        </div>
+                        <div class="item-form-delete">
+                            {% if formset.can_delete %}
+                                <label for="{{ formset.empty_form.DELETE.id_for_label }}">Remover:</label>
+                                {{ formset.empty_form.DELETE }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions form-actions-separator">
+                <button type="submit" class="btn-submit">
+                    <svg class="icon"><use href="#icon-save"></use></svg>
+                    Registrar Empréstimo
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

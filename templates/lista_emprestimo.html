@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Histórico de Empréstimos{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>Histórico de Empréstimos</h1>
+        <a href="{% url 'novo_emprestimo' %}" class="btn-submit">
+            <svg class="icon"><use href="#icon-plus-circle"></use></svg>
+            Novo Empréstimo
+        </a>
+    </div>
+
+    <div class="stats-grid" style="border-left: 4px solid #3B82F6;"> <div class="stat-card">
+            <h4>Empréstimos Ativos</h4>
+            <span class="value" style="color: #3B82F6;">{{ kpi_ativos }}</span>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid #E53E3E;">
+            <h4>Empréstimos Atrasados</h4>
+            <span class="value" style="color: #E53E3E;">{{ kpi_atrasados }}</span>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid #38A169;">
+            <h4>Concluídos (Devolvidos)</h4>
+            <span class="value" style="color: #38A169;">{{ kpi_devolvidos }}</span>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="search-bar">
+            <form method="GET" action="{% url 'lista_emprestimo' %}">
+                <input type="text" name="q" placeholder="Pesquisar por Colaborador ou ID..." value="{{ search_query }}">
+                
+                <select name="status" onchange="this.form.submit()">
+                    <option value="">Filtrar por Status...</option>
+                    <option value="ATIVO" {% if status_filter == 'ATIVO' %}selected{% endif %}>Ativo</option>
+                    <option value="ATRASADO" {% if status_filter == 'ATRASADO' %}selected{% endif %}>Atrasado</option>
+                    <option value="DEVOLVIDO" {% if status_filter == 'DEVOLVIDO' %}selected{% endif %}>Devolvido</option>
+                </select>
+                
+                <button type="submit" class="btn-submit btn-back">Buscar</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Colaborador</th>
+                        <th>Data Empréstimo</th>
+                        <th>Data Prev. Devolução</th>
+                        <th>Status</th>
+                        <th class="actions">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emprestimo in lista_emprestimos %}
+                    <tr>
+                        <td>#{{ emprestimo.id }}</td>
+                        <td>{{ emprestimo.colaborador.nome_completo }}</td>
+                        <td>{{ emprestimo.data_emprestimo|date:"d/m/Y H:i" }}</td>
+                        <td>{{ emprestimo.data_prevista_devolucao|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="status-badge status-{{ emprestimo.status|lower }}">
+                                {{ emprestimo.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <a href="{% url 'detalhe_emprestimo' emprestimo.id %}">Ver Detalhes</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="data-table-empty">
+                            Nenhum empréstimo encontrado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal-backdrop" id="feedbackModalBackdrop" style="display: none;"></div>
+    <div class="modal" id="feedbackModal" style="display: none;">
+        <div class="modal-header" id="feedbackModalHeader">
+            <h3 id="feedbackModalTitle"></h3>
+            <button class="modal-close" id="feedbackModalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="feedbackModalBody"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="feedbackModalOkBtn">OK</button>
+        </div>
+    </div>
+    
+    {% with all_messages=messages %}
+    <div id="feedbackData" 
+        data-success-message="{% for message in all_messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message|escapejs }} {% endif %}{% endfor %}"
+        data-error-message="{% for message in all_messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message|escapejs }} {% endif %}{% endfor %}"
+    ></div>
+    {% endwith %}
+
+{% endblock %}
