@@ -6,14 +6,6 @@
 
 {% block content %}
     
-    {% with all_messages=messages %}
-        <div id="feedbackData" 
-            data-success-message="{% for message in all_messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }} {% endif %}{% endfor %}"
-            data-error-message="{% for message in all_messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }} {% endif %}{% endfor %}"
-        ></div>
-    {% endwith %}
-
-    
     <div class="page-header">
         <h1>Cadastrar Colaborador</h1>
         

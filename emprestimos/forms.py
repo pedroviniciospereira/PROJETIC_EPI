@@ -6,7 +6,7 @@ from colaboradores.models import Colaborador
 from equipamentos.models import Equipamento
 from django.core.exceptions import ValidationError
 
-## --- Formulário 1: O "Cabeçalho" do Empréstimo (Sem mudanças) ---
+## --- Formulário 1: O "Cabeçalho" do Empréstimo ---
 
 class EmprestimoForm(forms.ModelForm):
     ##
@@ -36,7 +36,7 @@ class EmprestimoForm(forms.ModelForm):
             raise ValidationError("A data de devolução não pode ser no passado.")
         return data
 
-## --- Formulário 2: Os "Itens" do Empréstimo (Carrinho) (ATUALIZADO) ---
+## --- Formulário 2: Os "Itens" do Empréstimo (Carrinho) ---
 
 class ItemEmprestadoForm(forms.ModelForm):
     ##
@@ -44,7 +44,6 @@ class ItemEmprestadoForm(forms.ModelForm):
     ##
     class Meta:
         model = ItemEmprestado
-        ## (ATUALIZADO) Usa o novo nome do campo
         fields = ['equipamento', 'quantidade_emprestada'] 
 
     def __init__(self, *args, **kwargs):
@@ -54,43 +53,49 @@ class ItemEmprestadoForm(forms.ModelForm):
             estoque_disponivel__gt=0
         ).order_by('nome')
         self.fields['equipamento'].label = "Equipamento"
-        ## (ATUALIZADO) Atualiza o label do campo
         self.fields['quantidade_emprestada'].label = "Qtde. Emprestada"
 
-   def clean(self):
+    def clean(self):
         cleaned_data = super().clean()
         equipamento = cleaned_data.get('equipamento')
         quantidade = cleaned_data.get('quantidade_emprestada')
 
-        # Verifica se o formulário foi mexido (tem algum valor)
-        if equipamento or quantidade:
+        # Verifica se 'quantidade' foi preenchida (mesmo que seja 0)
+        # Usamos 'is not None' porque 0 no Python conta como False
+        tem_quantidade = quantidade is not None
+        tem_equipamento = bool(equipamento)
+
+        # Se preencheu qualquer um dos dois campos, valida a linha inteira
+        if tem_equipamento or tem_quantidade:
             
-            # Erro 1: Preencheu quantidade mas não escolheu equipamento
-            if not equipamento:
+            # Erro 1: Tem quantidade (ex: 1 ou 0), mas não escolheu o equipamento
+            if tem_quantidade and not tem_equipamento:
                 self.add_error('equipamento', "Selecione um equipamento.")
 
-            # Erro 2: A quantidade é inválida (Vazia, 0 ou negativa)
-            if quantidade is None:
+            # Erro 2: Tem equipamento, mas a quantidade está vazia
+            if tem_equipamento and not tem_quantidade:
                 self.add_error('quantidade_emprestada', "Informe a quantidade.")
-            elif quantidade <= 0:
+
+            # Erro 3: Quantidade é 0 ou negativa
+            if tem_quantidade and quantidade <= 0:
                 self.add_error('quantidade_emprestada', "A quantidade deve ser pelo menos 1.")
             
-            # Erro 3: Verifica estoque (só se o equipamento e quantidade forem válidos)
-            elif equipamento and quantidade > equipamento.estoque_disponivel:
-                self.add_error(
-                    'quantidade_emprestada', 
-                    f"Estoque insuficiente. Disponível para '{equipamento.nome}': {equipamento.estoque_disponivel}"
-                )
+            # Erro 4: Verifica estoque (apenas se tudo o resto estiver ok e qtd > 0)
+            elif tem_equipamento and tem_quantidade and quantidade > 0:
+                if quantidade > equipamento.estoque_disponivel:
+                    self.add_error(
+                        'quantidade_emprestada', 
+                        f"Estoque insuficiente. Disponível para '{equipamento.nome}': {equipamento.estoque_disponivel}"
+                    )
 
         return cleaned_data
 
-## --- Formulário 3: O "FormSet" que junta tudo (ATUALIZADO) ---
+## --- Formulário 3: O "FormSet" que junta tudo ---
 
 ItemEmprestadoFormSet = inlineformset_factory(
     Emprestimo,          
     ItemEmprestado,      
     form=ItemEmprestadoForm, 
-    ## (ATUALIZADO) Define o campo 'quantidade_emprestada'
     fields=['equipamento', 'quantidade_emprestada'],
     extra=1,             
     can_delete=True,     
@@ -99,7 +104,7 @@ ItemEmprestadoFormSet = inlineformset_factory(
 )
 
 
-## --- (NOVO) Formulário 4: Devolução Parcial de um Item ---
+## --- Formulário 4: Devolução Parcial de um Item ---
 
 class DevolucaoParcialForm(forms.ModelForm):
     ##
@@ -111,12 +116,11 @@ class DevolucaoParcialForm(forms.ModelForm):
     quantidade_devolvida = forms.IntegerField(
         label="Quantidade a Devolver",
         min_value=1,
-        widget=forms.NumberInput(attrs={'placeholder': 'Qtde.'}) # Adiciona placeholder
+        widget=forms.NumberInput(attrs={'placeholder': 'Qtde.'})
     )
 
     class Meta:
         model = HistoricoDevolucao
-        ## O usuário preenche a quantidade, o status e a observação
         fields = ['quantidade_devolvida', 'status_devolucao', 'observacao']
         widgets = {
             'observacao': forms.TextInput(
@@ -125,22 +129,17 @@ class DevolucaoParcialForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        ## (IMPORTANTE) Precisamos receber a 'instance' do ItemEmprestado
-        ## para sabermos qual é a quantidade pendente.
         self.item_emprestado_instance = kwargs.pop('item_emprestado_instance', None)
         super().__init__(*args, **kwargs)
         
         self.fields['status_devolucao'].label = "Registrar como"
         
-        ## (IMPORTANTE) Define a quantidade máxima permitida no campo
         if self.item_emprestado_instance:
             pendente = self.item_emprestado_instance.get_quantidade_pendente()
             self.fields['quantidade_devolvida'].max_value = pendente
-            self.fields['quantidade_devolvida'].initial = pendente ## Sugere o valor máximo
+            self.fields['quantidade_devolvida'].initial = pendente
 
     def clean_quantidade_devolvida(self):
-        ## Validação final para garantir que a quantidade não
-        ## seja maior do que a pendente.
         quantidade = self.cleaned_data.get('quantidade_devolvida')
         
         if not self.item_emprestado_instance:
