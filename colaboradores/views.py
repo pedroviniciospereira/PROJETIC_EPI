@@ -19,9 +19,9 @@ def colaborador_lista(request):
             Q(nome_completo__icontains=query) |
             Q(matricula__icontains=query) |
             Q(funcao__icontains=query)
-        ).order_by('-data_cadastro')
+        ).order_by('nome_completo')
     else:
-        colaboradores = Colaborador.objects.all().order_by('-data_cadastro')
+        colaboradores = Colaborador.objects.all().order_by('nome_completo')
     
     total_colaboradores = colaboradores.count()
     colaboradores_ativos = colaboradores.filter(status='Ativo').count()
@@ -57,6 +57,10 @@ def colaborador_novo(request):
         form = ColaboradorForm(request.POST)
         if form.is_valid():
             form.save()
+
+            # --- ADICIONADO: Envia a mensagem de sucesso ---
+            messages.success(request, 'Colaborador cadastrado com sucesso!')
+
             form_vazio = ColaboradorForm()
             return render(request, 'cadastro.html', {
                 'form': form_vazio,

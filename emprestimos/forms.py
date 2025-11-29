@@ -57,20 +57,32 @@ class ItemEmprestadoForm(forms.ModelForm):
         ## (ATUALIZADO) Atualiza o label do campo
         self.fields['quantidade_emprestada'].label = "Qtde. Emprestada"
 
-    def clean_quantidade_emprestada(self):
-        ## (ATUALIZADO) Valida o campo 'quantidade_emprestada'
-        quantidade = self.cleaned_data.get('quantidade_emprestada')
-        equipamento = self.cleaned_data.get('equipamento')
+   def clean(self):
+        cleaned_data = super().clean()
+        equipamento = cleaned_data.get('equipamento')
+        quantidade = cleaned_data.get('quantidade_emprestada')
 
-        if equipamento and quantidade:
-            if quantidade <= 0:
-                raise ValidationError("A quantidade deve ser pelo menos 1.")
+        # Verifica se o formulário foi mexido (tem algum valor)
+        if equipamento or quantidade:
             
-            if quantidade > equipamento.estoque_disponivel:
-                raise ValidationError(
-                    f"Quantidade indisponível. Estoque disponível para '{equipamento.nome}': {equipamento.estoque_disponivel}"
+            # Erro 1: Preencheu quantidade mas não escolheu equipamento
+            if not equipamento:
+                self.add_error('equipamento', "Selecione um equipamento.")
+
+            # Erro 2: A quantidade é inválida (Vazia, 0 ou negativa)
+            if quantidade is None:
+                self.add_error('quantidade_emprestada', "Informe a quantidade.")
+            elif quantidade <= 0:
+                self.add_error('quantidade_emprestada', "A quantidade deve ser pelo menos 1.")
+            
+            # Erro 3: Verifica estoque (só se o equipamento e quantidade forem válidos)
+            elif equipamento and quantidade > equipamento.estoque_disponivel:
+                self.add_error(
+                    'quantidade_emprestada', 
+                    f"Estoque insuficiente. Disponível para '{equipamento.nome}': {equipamento.estoque_disponivel}"
                 )
-        return quantidade
+
+        return cleaned_data
 
 ## --- Formulário 3: O "FormSet" que junta tudo (ATUALIZADO) ---
 

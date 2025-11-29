@@ -88,7 +88,7 @@ def novo_emprestimo(request):
                 item.save()
 
             messages.success(request, f"Empréstimo #{emprestimo.id} registrado com sucesso!")
-            return redirect('lista_emprestimo')
+            return redirect('novo_emprestimo')
         else:
             messages.error(request, "Formulário inválido. Verifique os erros abaixo.")
 

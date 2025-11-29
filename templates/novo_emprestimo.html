@@ -23,13 +23,6 @@
                 <h2>1. Selecione o Colaborador e a Data</h2>
             </div>
 
-            {% if messages %}
-                <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'error' }}">{{ message }}</div>
-                {% endfor %}
-                </div>
-            {% endif %}
             {% if form.non_field_errors %}
                 <div class="alert alert-error">{{ form.non_field_errors }}</div>
             {% endif %}
@@ -124,4 +117,26 @@
             </div>
         </form>
     </div>
+
+    <div class="modal-backdrop" id="feedbackModalBackdrop" style="display: none;"></div>
+    <div class="modal" id="feedbackModal" style="display: none;">
+        <div class="modal-header" id="feedbackModalHeader">
+            <h3 id="feedbackModalTitle"></h3>
+            <button class="modal-close" id="feedbackModalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="feedbackModalBody"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="feedbackModalOkBtn">OK</button>
+        </div>
+    </div>
+    
+    {% with all_messages=messages %}
+    <div id="feedbackData" 
+        data-success-message="{% for message in all_messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }} {% endif %}{% endfor %}"
+        data-error-message="{% for message in all_messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }} {% endif %}{% endfor %}"
+    ></div>
+    {% endwith %}
+
 {% endblock %}

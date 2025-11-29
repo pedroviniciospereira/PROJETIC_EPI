@@ -43,6 +43,8 @@ def equipamento_novo(request):
         form = EquipamentoForm(request.POST)
         if form.is_valid():
             form.save()
+
+            messages.success(request, 'Equipamento cadastrado com sucesso!')
             
             # (CORREÇÃO) Em vez de redirecionar, vamos 
             # renderizar a página novamente com um form vazio
