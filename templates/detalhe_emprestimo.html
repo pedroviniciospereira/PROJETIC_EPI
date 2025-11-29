@@ -37,39 +37,42 @@
             <h2>Informações do Empréstimo</h2>
         </div>
         
-        <div class="details-grid-3-col">
-            <div class="form-group">
-                <label>Colaborador</label>
-                <p>{{ emprestimo.colaborador.nome_completo }}</p>
-            </div>
-            <div class="form-group">
-                <label>Matrícula</label>
-                <p>{{ emprestimo.colaborador.matricula }}</p>
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <p>
-                    <span class="status-badge status-{{ emprestimo.status|lower }}">
-                        {{ emprestimo.get_status_display }}
-                    </span>
-                </p>
-            </div>
-            <div class="form-group">
-                <label>Data do Empréstimo</label>
-                <p>{{ emprestimo.data_emprestimo|date:"d/m/Y H:i" }}</p>
-            </div>
-            <div class="form-group">
-                <label>Data Prev. Devolução</label>
-                <p>{{ emprestimo.data_prevista_devolucao|date:"d/m/Y" }}</p>
-            </div>
-            
-            {% if emprestimo.observacao %}
-            <div class="form-group grid-col-full">
-                <label>Observação</label>
-                <p class="details-observation">{{ emprestimo.observacao }}</p>
-            </div>
-            {% endif %}
+    <div class="details-grid-3-col">
+        <div class="form-group">
+            <label>Colaborador</label>
+            <input type="text" class="form-control" value="{{ emprestimo.colaborador.nome_completo }}" disabled style="background-color: #e9ecef; border: 1px solid #ced4da; width: 100%; padding: 8px;">
         </div>
+
+        <div class="form-group">
+            <label>Matrícula</label>
+            <input type="text" class="form-control" value="{{ emprestimo.colaborador.matricula }}" disabled style="background-color: #e9ecef; border: 1px solid #ced4da; width: 100%; padding: 8px;">
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <p>
+                <span class="status-badge status-{{ emprestimo.status|lower }}">
+                    {{ emprestimo.get_status_display }}
+                </span>
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label>Data do Empréstimo</label>
+            <input type="text" class="form-control" value="{{ emprestimo.data_emprestimo|date:'d/m/Y H:i' }}" disabled style="background-color: #e9ecef; border: 1px solid #ced4da; width: 100%; padding: 8px;">
+        </div>
+
+        <div class="form-group">
+            <label>Data Prev. Devolução</label>
+            <input type="text" class="form-control" value="{{ emprestimo.data_prevista_devolucao|date:'d/m/Y' }}" disabled style="background-color: #e9ecef; border: 1px solid #ced4da; width: 100%; padding: 8px;">
+        </div>
+        
+        {% if emprestimo.observacao %}
+        <div class="form-group grid-col-full">
+            <label>Observação</label>
+            <textarea class="form-control" rows="3" disabled style="background-color: #e9ecef; border: 1px solid #ced4da; width: 100%; padding: 8px;">{{ emprestimo.observacao }}</textarea>
+        </div>
+        {% endif %}
     </div>
     
     <div class="form-card">

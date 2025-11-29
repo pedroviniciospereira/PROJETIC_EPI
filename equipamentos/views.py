@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Q
 from .models import Equipamento
 from .forms import EquipamentoForm
+from django.db.models import ProtectedError
 
 # Create your views here.
 

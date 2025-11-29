@@ -46,22 +46,22 @@ class Emprestimo(models.Model):
         return f"Empréstimo #{self.id} - {self.colaborador.nome_completo}"
 
     def clean(self):
-        # Garante que a data de devolução não seja no passado
-        if self.data_prevista_devolucao < timezone.now().date():
+        # Verifica se o campo está preenchido antes de comparar
+        if self.data_prevista_devolucao and self.data_prevista_devolucao < timezone.now().date():
             raise ValidationError("A data de devolução não pode ser no passado.")
 
 
 class ItemEmprestado(models.Model):
     ##
-    ## (MODIFICADO)
     ## Modelo "Detalhe" que representa cada item dentro de um Empréstimo.
     ## (Ex: "10 x Luvas de Raspa")
     ##
     
-    # (MODIFICADO) Status simplificado. O detalhe fica no Histórico.
+    # Status simplificado. O detalhe fica no Histórico.
     STATUS_ITEM_CHOICES = [
         ('PENDENTE', 'Pendente'),   # O colaborador ainda deve itens
         ('CONCLUIDO', 'Concluído'), # Todos os itens foram processados
+        ('FORNECIDO', 'Fornecido (Entrega Definitiva)'),
     ]
 
     emprestimo = models.ForeignKey(
@@ -74,7 +74,7 @@ class ItemEmprestado(models.Model):
         on_delete=models.PROTECT,
         related_name="emprestimos_itens"
     )
-    # (MODIFICADO) Renomeado para clareza
+ 
     quantidade_emprestada = models.PositiveIntegerField(default=1) 
     
     status_item = models.CharField(
@@ -83,16 +83,13 @@ class ItemEmprestado(models.Model):
         default='PENDENTE',
         verbose_name="Status do Item"
     )
-    
-    # (REMOVIDO) Os campos data_devolucao_item e status_item (EM_USO, DEVOLVIDO)
-    # agora pertencem ao novo modelo HistoricoDevolucao.
 
     def __str__(self):
         return f"{self.quantidade_emprestada}x {self.equipamento.nome} (Empréstimo #{self.emprestimo.id})"
         
     def get_quantidade_devolvida_total(self):
         ##
-        ## (NOVO) Soma todas as quantidades nos registros de histórico.
+        ## Soma todas as quantidades nos registros de histórico.
         ##
         # Acessa o 'historico_devolucoes' (related_name do novo modelo)
         # e soma o campo 'quantidade_devolvida'
@@ -103,14 +100,13 @@ class ItemEmprestado(models.Model):
         
     def get_quantidade_pendente(self):
         ##
-        ## (NOVO) Calcula o que ainda falta devolver.
+        ## Calcula o que ainda falta devolver.
         ##
         return self.quantidade_emprestada - self.get_quantidade_devolvida_total()
 
 
 class HistoricoDevolucao(models.Model):
     ##
-    ## (NOVO MODELO)
     ## Registra cada ação de devolução (parcial ou total).
     ## (Ex: "5x Devolvido", "2x Danificado")
     ##

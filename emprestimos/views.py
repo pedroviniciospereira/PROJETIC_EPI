@@ -22,8 +22,9 @@ def lista_emprestimo(request):
     if query:
         emprestimos = emprestimos.filter(
             Q(colaborador__nome_completo__icontains=query) |
-            Q(id__icontains=query)
-        )
+            Q(id__icontains=query) |
+            Q(itens_emprestados__equipamento__nome__icontains=query) 
+        ).distinct() # Use distinct() para evitar duplicatas na lista
 
     if status_filter:
         emprestimos = emprestimos.filter(status=status_filter)
