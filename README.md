@@ -1,63 +1,53 @@
-# PROJETIC_EPI: Sistema de Gerenciamento de EPIs 👷🚧
+# PROJETIC_EPI: Sistema de Gestão Inteligente de Segurança 👷🚧
 
 ## 🚀 Visão Geral
 
-Este projeto é um Sistema Web completo para o Gerenciamento de Equipamentos de Proteção Individual (EPIs), desenvolvido como parte do curso Técnico em Desenvolvimento de Sistemas. O objetivo é atender à necessidade de uma construtora que busca modernizar seu controle de estoque, rastrear empréstimos e garantir a segurança e conformidade no ambiente de trabalho.
+O **PROJETIC EPI** é um sistema web completo desenvolvido para modernizar a gestão de Equipamentos de Proteção Individual (EPIs) em construtoras e empresas. O foco é garantir a conformidade com a segurança do trabalho (NR-6), controlar o estoque em tempo real e rastrear empréstimos de forma detalhada.
 
-O sistema é dividido em uma **página pública** (landing page) e um **painel de administração** privado e seguro, acessível apenas por login.
+O sistema possui uma **Landing Page pública** moderna para apresentação e um **Painel Administrativo** seguro para a gestão diária.
 
 ---
 
 ## ✨ Funcionalidades Principais
 
-O sistema é modularizado em quatro aplicativos principais:
+### 🖥️ Interface & Experiência
+* **Landing Page Moderna:** Página inicial com design profissional, estatísticas e apresentação de recursos.
+* **Dashboard Interativo:** Visão geral com KPIs de empréstimos (Ativos, Atrasados, Devoluções).
+* **Design Responsivo:** Funciona bem em computadores e dispositivos móveis.
 
-### 🔐 Módulo de Autenticação (App: `core`)
-* **Landing Page:** Uma "Home Page" pública, moderna e visualmente atraente que descreve o propósito do projeto.
-* **Sistema de Login:** Uma página de login segura (`/login/`) para administradores do sistema.
-* **Proteção de Rotas:** O painel de gerenciamento (`/sistema/`) é 100% protegido. Usuários não logados são automaticamente redirecionados para a tela de login.
-* **Sistema de Logout:** Funcionalidade de "Sair" segura que redireciona o usuário de volta para a Home Page.
+### 🔐 Segurança & Perfil (App: `core`)
+* **Acesso Restrito:** Sistema protegido por login.
+* **Gestão de Perfil:** O usuário pode alterar seus dados, senha e fazer **upload de foto de perfil**.
+* **Segurança Reforçada:** Configurações ajustadas para ambientes de desenvolvimento em nuvem (Codespaces) e proteção contra ataques CSRF.
 
-### 👥 Módulo de Colaboradores (App: `colaboradores`)
-* **CRUD Completo:** Cadastro, Leitura, Edição e Exclusão de colaboradores.
-* **Validação de Matrícula:** Impede o cadastro de matrículas duplicadas.
-* **Busca e Filtro:** Permite pesquisar colaboradores por nome, matrícula ou função.
-* **Interface com Modais:** Utiliza modais de confirmação para exclusão e feedback de sucesso/erro, evitando a troca desnecessária de telas.
+### 👥 Gestão de Colaboradores (App: `colaboradores`)
+* **Cadastro Completo:** Registro de nome, matrícula (única), função e status.
+* **Validações:** Impede duplicidade de matrículas.
+* **Busca Inteligente:** Filtre colaboradores por nome ou matrícula rapidamente.
 
-### 📦 Módulo de Estoque (App: `equipamentos`)
-* **CRUD Completo:** Cadastro, Leitura, Edição e Exclusão de equipamentos (EPIs).
-* **Controle de Estoque:** Gerenciamento separado de `estoque_total` e `estoque_disponivel`.
-* **Validação de Negócio:**
-    * Impede o cadastro de equipamentos com o mesmo nome (`unique=True`).
-    * Impede o cadastro de equipamentos com estoque total igual a zero.
-* **Segurança:** Impede a exclusão de um equipamento se houver itens dele atualmente emprestados.
+### 📦 Controle de Estoque (App: `equipamentos`)
+* **Inventário de EPIs:** Cadastro de equipamentos com categoria, C.A. (Certificado de Aprovação) e quantidades.
+* **Estoque Inteligente:** O sistema calcula automaticamente o `estoque_disponivel` com base nos empréstimos ativos.
+* **Proteção de Dados:** Impede a exclusão de itens que ainda estão emprestados.
 
-### 🚚 Módulo de Empréstimos (App: `emprestimos`)
-* **Dashboard de KPIs:** Tela principal com indicadores visuais (KPIs) de empréstimos **Ativos**, **Atrasados** e **Devolvidos**.
-* **Sistema de "Carrinho" (FormSet):** Permite o registro de um novo empréstimo para um colaborador com **múltiplos itens e quantidades** de uma só vez.
-* **Controle de Estoque Ativo:**
-    * O formulário de "Novo Empréstimo" só exibe EPIs com `estoque_disponivel > 0`.
-    * Impede o empréstimo de uma quantidade maior do que a disponível.
-    * **Subtrai** do `estoque_disponivel` automaticamente quando um empréstimo é realizado.
-* **Sistema de Devolução Parcial:**
-    * Permite devolver partes de um item (ex: devolver 5 de 10 luvas).
-    * O sistema calcula automaticamente a "Quantidade Pendente".
-* **Histórico de Devoluções:**
-    * Cria um **log de histórico** para cada devolução parcial, registrando a quantidade, a data e o status (Devolvido, Danificado, Perdido).
-    * **Adiciona** ao `estoque_disponivel` automaticamente quando um item é "Devolvido" ou "Danificado".
-* **Atualização Automática de Status:**
-    * Itens de empréstimo mudam de `PENDENTE` para `CONCLUÍDO` quando a quantidade pendente chega a zero.
-    * Empréstimos mudam de `ATIVO` para `DEVOLVIDO` quando todos os seus itens são concluídos.
+### 🚚 Gestão de Empréstimos (App: `emprestimos`)
+* **Carrinho de Empréstimo:** Adicione múltiplos EPIs para um único colaborador em uma só transação.
+* **Validação de Estoque:** O sistema impede empréstimos se não houver saldo disponível.
+* **Devolução Parcial e Total:**
+    * Permite devolver apenas parte dos itens (ex: devolver 1 luva de 2 emprestadas).
+    * Registra o estado do item na devolução: **Devolvido**, **Danificado** ou **Perdido**.
+* **Histórico Detalhado:** Rastreabilidade completa de cada item emprestado.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Backend:** Python 3, Django 5.2
-* **Frontend:** HTML5, CSS3 (CSS Grid, Flexbox), JavaScript (ES6+)
-* **Banco de Dados:** SQLite 3 (para desenvolvimento)
-* **Controle de Versão:** Git, GitHub
-* **Bibliotecas JS:** Feather Icons (para ícones), AOS (para animações de scroll)
+* **Backend:** Python 3.12+, Django 5.2
+* **Frontend:** HTML5, CSS3 (Glassmorphism, Flexbox, Grid), JavaScript Puro.
+* **Banco de Dados:** SQLite 3 (Padrão)
+* **Bibliotecas:**
+    * `Pillow`: Processamento de imagens de perfil.
+    * `Boxicons` & `Feather Icons`: Ícones vetoriais.
 
 ---
 
@@ -91,6 +81,7 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
     *(Opcional: Se existir um arquivo `requirements.txt`, use `pip install -r requirements.txt`)*
     ```bash
     pip install django
+    pip install pillow
     ```
 
 5.  **Aplique as Migrações do Banco de Dados:**
