@@ -4,60 +4,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo ao PROJETIC EPI</title>
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <title>PROJETIC EPI - Gestão Inteligente</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👷</text></svg>">
+    
     <link rel="stylesheet" href="{% static 'home_style.css' %}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 
-    <header class="home-header">
-        <div class="logo-container">
-            <img src="{% static 'img/logo-epi.png' %}" alt="Logo PROJETIC EPI" class="home-logo">
-            <span>PROJETIC EPI</span>
+    <header class="home-header" id="header">
+        <div class="header-content">
+            
+            <div class="brand-logo">
+                <div class="icon-shape">
+                    <i class='bx bxs-hard-hat'></i>
+                </div>
+                <span>PROJETIC EPI</span>
+            </div>
+            
+            <nav class="home-nav">
+                <a href="#funcionalidades">Funcionalidades</a>
+                <a href="#como-funciona">Como Funciona</a>
+            </nav>
+
+            <a href="{% url 'login' %}" class="btn-login">
+                <i class='bx bx-log-in-circle'></i> Acesso Restrito
+            </a>
         </div>
-        <a href="{% url 'login' %}" class="btn-login">Acessar Sistema</a>
     </header>
 
-    <main class="home-main">
+    <main>
         
         <section class="hero">
-            <div class="hero-text">
-                <h1>Controle e Gestão de EPIs de forma <strong>simples e eficaz</strong>.</h1>
-                <p>Gerencie colaboradores, equipamentos e empréstimos em um só lugar. Tenha total rastreabilidade e aumente a segurança da sua equipe.</p>
-                <a href="{% url 'login' %}" class="btn-login-main">Fazer Login agora</a>
-            </div>
-            <div class="hero-image">
-                <img src="{% static 'img/home-hero-image.png' %}" alt="Trabalhador com Equipamento de Proteção">
+            <div class="hero-container">
+                <div class="hero-text">
+                    <span class="badge-hero"><i class='bx bxs-zap'></i> Sistema 100% Online</span>
+                    <h1>Gestão de EPIs <br>simples e segura.</h1>
+                    <p>Controle entregas, estoque e validades em um único lugar. Ideal para construtoras que buscam conformidade com a NR-6 sem burocracia.</p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'login' %}" class="btn-primary">Começar Agora</a>
+                        <a href="#funcionalidades" class="btn-outline">Ver Recursos</a>
+                    </div>
                 </div>
+                
+                <div class="hero-visual">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <div class="dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="fake-search"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="fake-sidebar">
+                                <div class="fake-line short"></div>
+                                <div class="fake-line"></div>
+                                <div class="fake-line"></div>
+                                <div class="fake-line"></div>
+                            </div>
+                            <div class="fake-content">
+                                <div class="fake-chart-area">
+                                    <div class="bar" style="height: 60%"></div>
+                                    <div class="bar" style="height: 80%"></div>
+                                    <div class="bar" style="height: 40%"></div>
+                                    <div class="bar active" style="height: 90%"></div>
+                                </div>
+                                <div class="fake-table">
+                                    <div class="fake-row"></div>
+                                    <div class="fake-row"></div>
+                                    <div class="fake-row"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="floating-badge">
+                            <i class='bx bxs-check-shield'></i>
+                            <div>
+                                <strong>100% Seguro</strong>
+                                <span>Dados Criptografados</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="features">
-            <h2>Uma plataforma completa</h2>
-            <p class="features-subtitle">Tudo que você precisa para gerenciar a segurança.</p>
+        <section class="stats">
+            <div class="stat-item">
+                <i class='bx bx-group stat-icon'></i>
+                <h3 class="stat-number">+500</h3>
+                <p>Colaboradores</p>
+            </div>
+            <div class="stat-item">
+                <i class='bx bx-package stat-icon'></i>
+                <h3 class="stat-number">+1k</h3>
+                <p>EPIs Controlados</p>
+            </div>
+            <div class="stat-item">
+                <i class='bx bx-check-circle stat-icon'></i>
+                <h3 class="stat-number">100%</h3>
+                <p>Conformidade</p>
+            </div>
+        </section>
+
+        <section class="features" id="funcionalidades">
+            <div class="section-header">
+                <h2>Recursos Poderosos</h2>
+                <p>Desenvolvido pensando na rotina do Técnico de Segurança.</p>
+            </div>
+
             <div class="features-grid">
                 <div class="card">
-                    <i class='bx bx-group'></i>
-                    <h3>Gestão de Colaboradores</h3>
-                    <p>Mantenha um cadastro atualizado de toda a sua equipe.</p>
+                    <div class="icon-box"><i class='bx bx-id-card'></i></div>
+                    <h3>Cadastro de Pessoal</h3>
+                    <p>Banco de dados completo dos seus colaboradores, organizado por função e matrícula.</p>
                 </div>
                 <div class="card">
-                    <i class='bx bx-hard-hat'></i>
-                    <h3>Controle de EPIs</h3>
-                    <p>Gerencie o inventário, validades e tipos de equipamentos.</p>
+                    <div class="icon-box"><i class='bx bxs-box'></i></div>
+                    <h3>Controle de Estoque</h3>
+                    <p>Monitore entradas e saídas. O sistema avisa quando o estoque de um item está baixo.</p>
                 </div>
                 <div class="card">
-                    <i class='bx bx-transfer'></i>
-                    <h3>Registro de Empréstimos</h3>
-                    <p>Saiba exatamente onde está cada item em tempo real.</p>
+                    <div class="icon-box"><i class='bx bx-transfer-alt'></i></div>
+                    <h3>Empréstimos & Devoluções</h3>
+                    <p>Registre retiradas em segundos. Histórico completo para auditorias e fiscalização.</p>
                 </div>
             </div>
         </section>
+
+        <section class="how-it-works" id="como-funciona">
+            <div class="section-header">
+                <h2>Como Funciona</h2>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-icon"><i class='bx bx-user-plus'></i></div>
+                    <h4>1. Cadastre</h4>
+                    <p>Adicione colaboradores e os equipamentos disponíveis.</p>
+                </div>
+                <div class="step-arrow"><i class='bx bx-chevron-right'></i></div>
+                <div class="step">
+                    <div class="step-icon"><i class='bx bx-clipboard'></i></div>
+                    <h4>2. Registre</h4>
+                    <p>Lance o empréstimo selecionando o funcionário e os itens.</p>
+                </div>
+                <div class="step-arrow"><i class='bx bx-chevron-right'></i></div>
+                <div class="step">
+                    <div class="step-icon"><i class='bx bx-check-double'></i></div>
+                    <h4>3. Controle</h4>
+                    <p>Acompanhe devoluções e gere relatórios automáticos.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Modernize sua gestão hoje</h2>
+            <p>Pare de perder tempo com planilhas de papel.</p>
+            <a href="{% url 'login' %}" class="btn-white">Acessar Sistema</a>
+        </section>
+
     </main>
 
-    <footer class="home-footer">
-        <p>© 2025 PROJETIC EPI. Todos os direitos reservados.</p>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="brand-logo white">
+                    <i class='bx bxs-hard-hat'></i>
+                    <span>PROJETIC EPI</span>
+                </div>
+                <p class="footer-desc">Sistema acadêmico desenvolvido para otimizar a segurança do trabalho.</p>
+            </div>
+            <div class="footer-copy">
+                <p>&copy; 2025 PROJETIC EPI. Todos os direitos reservados.</p>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        // Efeito simples de scroll no header
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+    </script>
 
 </body>
 </html>

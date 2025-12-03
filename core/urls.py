@@ -3,19 +3,27 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-# Rota para a Home Page
-path('', views.home, name='home'),
+    path('', views.home, name='home'),
+    
+    # Login
+    path('login/', auth_views.LoginView.as_view(
+        template_name='login.html',
+        redirect_authenticated_user=True 
+    ), name='login'),
 
-# Rota para a Página de Login
-path('login/', auth_views.LoginView.as_view(
-    template_name='login.html',
-    redirect_authenticated_user=True 
-), name='login'),
-
-# (CORRIGIDO) Rota para fazer Logout
-# Adicionamos 'next_page="home"' para que o logout via GET funcione
-# e redirecione corretamente para a home.
-path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
-
-
+    # Logout Personalizado (Funciona com GET)
+    path('logout/', views.custom_logout, name='logout'),
+    
+    # Perfil
+    path('sistema/perfil/', views.perfil, name='perfil'),
+    
+    # Alterar Senha
+    path('sistema/perfil/senha/', auth_views.PasswordChangeView.as_view(
+        template_name='password_change.html',
+        success_url='/sistema/perfil/senha/concluido/'
+    ), name='password_change'),
+    
+    path('sistema/perfil/senha/concluido/', auth_views.PasswordChangeDoneView.as_view(
+        template_name='password_change_done.html'
+    ), name='password_change_done'),
 ]

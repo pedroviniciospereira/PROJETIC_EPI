@@ -156,3 +156,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index' 
 # Para onde ir DEPOIS que o usuário fizer logout
 LOGOUT_REDIRECT_URL = 'home'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

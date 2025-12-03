@@ -21,3 +21,7 @@ urlpatterns = [
     # (ex: /sistema/emprestimos/novo/)
     path('sistema/emprestimos/', include('emprestimos.urls')),
 ]
+
+# Adiciona suporte a arquivos de mídia no modo DEBUG
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

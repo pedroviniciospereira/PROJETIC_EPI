@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Meu Perfil{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Configurações de Perfil</h1>
+</div>
+
+<div class="form-card">
+    <div class="form-grid-2-col" style="grid-template-columns: 1fr 2fr; align-items: start;">
+        
+        <div style="text-align: center;">
+            <div style="width: 150px; height: 150px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; border: 4px solid #1E6043;">
+                {% if user.profile.foto %}
+                    <img src="{{ user.profile.foto.url }}" alt="Foto de Perfil" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <img src="https://placehold.co/150x150/FFFFFF/1E6043?text={{ user.username.0|upper }}" alt="Foto Padrão" style="width: 100%; height: 100%; object-fit: cover;">
+                {% endif %}
+            </div>
+            <a href="{% url 'password_change' %}" class="btn-submit" style="background-color: #4A5568; display: inline-block; width: 100%; margin-top: 10px;">
+                <svg class="icon"><use href="#icon-save"></use></svg> Alterar Senha
+            </a>
+        </div>
+
+        <div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-header">
+                    <h2>Dados Pessoais</h2>
+                </div>
+
+                <div class="form-group">
+                    <label>Nome de Usuário (Login)</label>
+                    <input type="text" value="{{ user.username }}" disabled class="form-control" style="background-color: #e9ecef;">
+                    <small>O nome de usuário não pode ser alterado.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Nome</label>
+                    {{ u_form.first_name }}
+                </div>
+                
+                <div class="form-group">
+                    <label>Sobrenome</label>
+                    {{ u_form.last_name }}
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+                    {{ u_form.email }}
+                </div>
+
+                <div class="form-group">
+                    <label>Alterar Foto</label>
+                    {{ p_form.foto }}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <svg class="icon"><use href="#icon-save"></use></svg>
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

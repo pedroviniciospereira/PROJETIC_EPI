@@ -127,8 +127,8 @@ function setupFeedbackModal() {
 
     // Pega as mensagens dos atributos data-*
     // (O 'trim()' remove espaços em branco)
-    const successMessage = dataDiv.dataset.successMessage.trim();
-    const errorMessage = dataDiv.dataset.errorMessage.trim();
+    const successMessage = dataDiv.dataset.successMessage ? dataDiv.dataset.successMessage.trim() : "";
+    const errorMessage = dataDiv.dataset.errorMessage ? dataDiv.dataset.errorMessage.trim() : "";
 
     const closeModal = () => {
         modal.style.display = 'none';
@@ -143,7 +143,8 @@ function setupFeedbackModal() {
     // Verifica se há mensagem de SUCESSO
     if (successMessage) {
         title.textContent = 'Sucesso!';
-        body.textContent = successMessage;
+        // (ALTERADO) Usa innerHTML para processar tags <br> se houver múltiplas mensagens
+        body.innerHTML = successMessage; 
         header.classList.add('modal-header-success');
         modal.style.display = 'block';
         backdrop.style.display = 'block';
@@ -151,7 +152,8 @@ function setupFeedbackModal() {
     // Senão, verifica se há mensagem de ERRO
     else if (errorMessage) {
         title.textContent = 'Falha';
-        body.textContent = errorMessage; // Ex: "ERRO: Esta matrícula já está cadastrada."
+        // (ALTERADO) Usa innerHTML para processar tags <br>
+        body.innerHTML = errorMessage; 
         header.classList.add('modal-header-danger');
         modal.style.display = 'block';
         backdrop.style.display = 'block';

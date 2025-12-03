@@ -112,13 +112,18 @@
                     </li>
                 </ul>
             </nav>
+            
             <div class="user-menu-dropdown" id="user-menu">
-                <a href="#">Configurações de Perfil</a>
+                <a href="{% url 'perfil' %}">Configurações de Perfil</a>
                 <a href="{% url 'logout' %}">Sair</a>
             </div>
 
             <div class="sidebar-footer" id="user-menu-trigger">
-                <img src="https://placehold.co/40x40/FFFFFF/1E6043?text={{ request.user.username.0|upper }}" alt="Foto Perfil" class="footer-profile-pic">
+                {% if request.user.profile.foto %}
+                    <img src="{{ request.user.profile.foto.url }}" alt="Foto Perfil" class="footer-profile-pic">
+                {% else %}
+                    <img src="https://placehold.co/40x40/FFFFFF/1E6043?text={{ request.user.username.0|upper }}" alt="Foto Perfil" class="footer-profile-pic">
+                {% endif %}
                 
                 <div class="user-info">
                     <strong>{{ request.user.username }}</strong>
@@ -137,8 +142,8 @@
 
     {% if messages %}
         <div id="feedbackData" 
-             data-success-message="{% for message in messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }} {% endif %}{% endfor %}"
-             data-error-message="{% for message in messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }} {% endif %}{% endfor %}"
+             data-success-message="{% for message in messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }}{% if not forloop.last %} <br> {% endif %}{% endif %}{% endfor %}"
+             data-error-message="{% for message in messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }}{% if not forloop.last %} <br> {% endif %}{% endif %}{% endfor %}"
         ></div>
     {% endif %}
 
