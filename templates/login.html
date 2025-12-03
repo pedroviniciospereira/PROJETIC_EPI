@@ -5,13 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - PROJETIC EPI</title>
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    <link rel="stylesheet" href="{% static '/home_style.css' %}">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👷</text></svg>">
+    
+    <link rel="stylesheet" href="{% static 'home_style.css' %}">
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body class="login-page">
 
     <div class="login-container">
-        <img src="{% static 'img/logo-epi.png' %}" alt="Logo EPI" class="login-logo">
+        <div class="brand-logo" style="justify-content: center; margin-bottom: 20px; color: #1E6043;">
+            <div class="icon-shape">
+                <i class='bx bxs-hard-hat'></i>
+            </div>
+            <span>PROJETIC EPI</span>
+        </div>
+
         <h2>Acesso ao Sistema</h2>
         <p>Use suas credenciais para entrar.</p>
 
@@ -19,21 +29,31 @@
             
             {% csrf_token %}
             
+            {% if form.errors %}
+                <div class="error-message">
+                    <i class='bx bxs-error-circle'></i> Usuário ou senha incorretos.
+                </div>
+            {% endif %}
+
             <div class="input-group">
                 <label for="id_username">Usuário</label>
-                <input type="text" name="username" id="id_username" required>
+                <input type="text" name="username" id="id_username" placeholder="Digite seu usuário" required>
             </div>
             
-            <div class="input-group">
+            <div class="input-group" style="margin-top: 15px;">
                 <label for="id_password">Senha</label>
-                <input type="password" name="password" id="id_password" required>
+                <input type="password" name="password" id="id_password" placeholder="Digite sua senha" required>
             </div>
-
-            {% if form.errors %}
-                <p class="error-message">Usuário ou senha incorretos. Tente novamente.</p>
-            {% endif %}
             
-            <button type="submit" class="btn-login-main">Entrar</button>
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 25px; cursor: pointer; border: none;">
+                Entrar no Sistema
+            </button>
+
+            <div style="margin-top: 20px; font-size: 0.9rem;">
+                <a href="{% url 'home' %}" style="color: #718096; text-decoration: none;">
+                    <i class='bx bx-arrow-back'></i> Voltar para Home
+                </a>
+            </div>
         </form>
     </div>
 

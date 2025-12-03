@@ -1,4 +1,5 @@
 /* static/home_style.css */
+/* (VERSÃO FINAL: HOME PROFISSIONAL + LOGIN) */
 
 :root {
     --verde-primario: #1E6043;
@@ -67,7 +68,7 @@ ul { list-style: none; }
     font-size: 1.5rem;
 }
 .brand-logo.white { color: white; }
-.brand-logo.white i { color: var(--laranja); } /* Ícone laranja no footer */
+.brand-logo.white i { color: var(--laranja); } 
 
 /* Navegação */
 .home-nav {
@@ -101,7 +102,6 @@ ul { list-style: none; }
 /* --- HERO SECTION --- */
 .hero {
     padding: 140px 5% 80px;
-    /* Gradiente moderno */
     background: linear-gradient(135deg, #1E6043 0%, #0F2F21 100%);
     color: white;
     display: flex;
@@ -111,7 +111,6 @@ ul { list-style: none; }
     overflow: hidden;
 }
 
-/* Círculos de fundo decorativos (CSS puro) */
 .hero::before, .hero::after {
     content: '';
     position: absolute;
@@ -121,7 +120,7 @@ ul { list-style: none; }
 }
 .hero::before {
     width: 300px; height: 300px;
-    background: rgba(255, 140, 0, 0.15); /* Laranja suave */
+    background: rgba(255, 140, 0, 0.15); 
     top: -50px; right: -50px;
 }
 .hero::after {
@@ -201,7 +200,7 @@ ul { list-style: none; }
     border-color: white;
 }
 
-/* --- CSS ILLUSTRATION (O "Mockup" do sistema) --- */
+/* --- MOCKUP VISUAL --- */
 .hero-visual {
     flex: 1;
     display: flex;
@@ -229,7 +228,6 @@ ul { list-style: none; }
     transform: rotateY(0deg) rotateX(0deg);
 }
 
-/* Cabeçalho do Card Fake */
 .card-header {
     height: 40px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -251,7 +249,6 @@ ul { list-style: none; }
     max-width: 150px;
 }
 
-/* Corpo do Card Fake */
 .card-body {
     flex: 1;
     display: flex;
@@ -273,10 +270,8 @@ ul { list-style: none; }
     width: 100%;
 }
 .fake-line.short { width: 40%; }
-
 .fake-content { flex: 1; display: flex; flex-direction: column; gap: 15px; }
 
-/* Gráfico de Barras Fake */
 .fake-chart-area {
     height: 120px;
     background: rgba(0,0,0,0.2);
@@ -293,8 +288,6 @@ ul { list-style: none; }
     transition: 0.5s;
 }
 .bar.active { background: var(--laranja); }
-
-/* Tabela Fake */
 .fake-table { display: flex; flex-direction: column; gap: 8px; }
 .fake-row {
     height: 25px;
@@ -302,7 +295,6 @@ ul { list-style: none; }
     border-radius: 4px;
 }
 
-/* Badge Flutuante */
 .floating-badge {
     position: absolute;
     bottom: 20px; right: -20px;
@@ -320,14 +312,10 @@ ul { list-style: none; }
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
 }
-.floating-badge i {
-    font-size: 24px;
-    color: var(--verde-primario);
-}
+.floating-badge i { font-size: 24px; color: var(--verde-primario); }
 .floating-badge div { display: flex; flex-direction: column; }
 .floating-badge strong { font-size: 0.9rem; line-height: 1.2; }
 .floating-badge span { font-size: 0.75rem; color: var(--texto-cinza); }
-
 
 /* --- STATS SECTION --- */
 .stats {
@@ -348,7 +336,6 @@ ul { list-style: none; }
     padding: 0 20px;
 }
 .stat-item:last-child { border: none; }
-
 .stat-icon {
     font-size: 2rem;
     color: var(--laranja);
@@ -369,7 +356,6 @@ ul { list-style: none; }
 .section-header h2 { font-size: 2.2rem; margin-bottom: 10px; }
 .section-header p { color: var(--texto-cinza); font-size: 1.1rem; }
 
-/* Features */
 .features { padding: 40px 5%; max-width: 1200px; margin: 0 auto 80px; }
 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
 .card {
@@ -473,4 +459,83 @@ ul { list-style: none; }
     .steps-container { flex-direction: column; gap: 40px; }
     .step-arrow { transform: rotate(90deg); }
     .home-nav { display: none; }
+}
+
+
+/* ========================================================== */
+/* --- ESTILOS DA PÁGINA DE LOGIN (Recuperados) --- */
+/* ========================================================== */
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--cinza-fundo);
+}
+
+.login-container {
+    background-color: var(--branco);
+    padding: 40px 40px 50px 40px; /* Mais espaço embaixo */
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+    width: 100%;
+    max-width: 420px; /* Um pouco mais largo */
+    text-align: center;
+}
+
+.login-container h2 {
+    margin-bottom: 10px;
+    color: var(--texto-escuro);
+    font-size: 1.5rem;
+}
+
+.login-container p {
+    color: var(--texto-cinza);
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--texto-escuro);
+    font-size: 0.9rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 0.3s;
+    background-color: #F8FAFC;
+    box-sizing: border-box; /* Garante que padding não estoure a largura */
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--verde-primario);
+    background-color: white;
+    box-shadow: 0 0 0 3px var(--verde-claro);
+}
+
+.error-message {
+    background-color: #FED7D7;
+    color: #C53030;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
 }
