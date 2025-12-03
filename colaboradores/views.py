@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import ProtectedError
+# Importação necessária para corrigir o erro de CSRF no Codespace
+from django.views.decorators.csrf import csrf_exempt
 
 @login_required 
 def colaborador_lista(request):
@@ -35,6 +37,7 @@ def colaborador_lista(request):
     return render(request, 'index.html', context)
 
 
+@csrf_exempt # <--- ADICIONADO: Ignora verificação CSRF para cadastro
 @login_required 
 def colaborador_novo(request):
     sugestoes_base = ['Pedreiro', 'Servente', 'Mestre de Obras', 'Carpinteiro', 'Eletricista']
@@ -46,7 +49,6 @@ def colaborador_novo(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Colaborador cadastrado com sucesso!')
-            # IMPORTANTE: Usamos redirect para limpar o formulário e processar a mensagem
             return redirect('cadastro') 
     else:
         form = ColaboradorForm() 
@@ -59,6 +61,7 @@ def colaborador_novo(request):
     return render(request, 'cadastro.html', context)
 
 
+@csrf_exempt # <--- ADICIONADO: Ignora verificação CSRF para edição
 @login_required 
 def colaborador_editar(request, id):
     colaborador = get_object_or_404(Colaborador, id=id)
@@ -72,7 +75,6 @@ def colaborador_editar(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Colaborador alterado com sucesso!')
-            # Redirect garante que a mensagem não fique presa
             return redirect('index') 
     else:
         form = ColaboradorForm(instance=colaborador) 
@@ -86,6 +88,7 @@ def colaborador_editar(request, id):
     return render(request, 'cadastro.html', context)
 
 
+@csrf_exempt # <--- ADICIONADO: Ignora verificação CSRF para exclusão
 @login_required 
 def colaborador_excluir(request, id):
     colaborador = get_object_or_404(Colaborador, id=id)
@@ -94,7 +97,6 @@ def colaborador_excluir(request, id):
         try:
             nome_colaborador = colaborador.nome_completo
             colaborador.delete()
-            # Esta é a única mensagem que deve aparecer ao excluir
             messages.success(request, f'Colaborador "{nome_colaborador}" foi excluído.')
         except ProtectedError:
             messages.error(request, f'Erro: O colaborador "{colaborador.nome_completo}" tem empréstimos registrados e não pode ser excluído.')

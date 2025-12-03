@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>{% block title %}Sistema EPI{% endblock %}</title>
-    
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
@@ -17,7 +15,6 @@
                 <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7-6-7 6v12Z"/>
                 <path d="M12 18v-6"/><path d="M12 8L4 4"/><path d="M12 8l8-4"/><path d="M16 4l-4 4-4-4"/>
             </symbol>
-            
             <symbol id="icon-users-group" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="8.5" cy="7" r="4"></circle><path d="M20 8v6M23 11h-6"></path>
@@ -48,7 +45,6 @@
     <div class="container">
         
         <aside class="sidebar">
-            
             <div class="sidebar-header">
                 <svg class="icon"><use href="#icon-factory"></use></svg>
                 <div class="sidebar-header-text">
@@ -59,56 +55,28 @@
 
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="separator">
-                        <span>Colaboradores</span>
-                    </li>
+                    <li class="separator"><span>Colaboradores</span></li>
                     <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
-                        <a href="{% url 'index' %}">
-                            <svg class="icon"><use href="#icon-users-group"></use></svg>
-                            <span>Gerenciar Colaboradores</span>
-                        </a>
+                        <a href="{% url 'index' %}"><svg class="icon"><use href="#icon-users-group"></use></svg><span>Gerenciar Colaboradores</span></a>
                     </li>
                     <li class="{% if request.resolver_match.url_name == 'cadastro' %}active{% endif %}">
-                        <a href="{% url 'cadastro' %}">
-                            <svg class="icon"><use href="#icon-plus-circle"></use></svg>
-                            <span>Cadastrar Colaborador</span>
-                        </a>
+                        <a href="{% url 'cadastro' %}"><svg class="icon"><use href="#icon-plus-circle"></use></svg><span>Cadastrar Colaborador</span></a>
                     </li>
                     
-                    <li class="separator">
-                        <span>Equipamentos</span>
-                    </li>
-                    
+                    <li class="separator"><span>Equipamentos</span></li>
                     <li class="{% if request.resolver_match.url_name == 'equipamento_lista' %}active{% endif %}">
-                        <a href="{% url 'equipamento_lista' %}">
-                            <svg class="icon"><use href="#icon-archive"></use></svg>
-                            <span>Gerenciar Equipamentos</span>
-                        </a>
+                        <a href="{% url 'equipamento_lista' %}"><svg class="icon"><use href="#icon-archive"></use></svg><span>Gerenciar Equipamentos</span></a>
                     </li>
-                    
                     <li class="{% if request.resolver_match.url_name == 'equipamento_novo' %}active{% endif %}">
-                        <a href="{% url 'equipamento_novo' %}">
-                            <svg class="icon"><use href="#icon-plus-circle"></use></svg>
-                            <span>Cadastrar Equipamento</span>
-                        </a>
+                        <a href="{% url 'equipamento_novo' %}"><svg class="icon"><use href="#icon-plus-circle"></use></svg><span>Cadastrar Equipamento</span></a>
                     </li>
                     
-                    <li class="separator">
-                        <span>Empréstimos</span>
-                    </li>
-                    
+                    <li class="separator"><span>Empréstimos</span></li>
                     <li class="{% if request.resolver_match.url_name == 'lista_emprestimo' %}active{% endif %}">
-                        <a href="{% url 'lista_emprestimo' %}">
-                            <svg class="icon"><use href="#icon-clipboard"></use></svg>
-                            <span>Histórico de Empréstimos</span>
-                        </a>
+                        <a href="{% url 'lista_emprestimo' %}"><svg class="icon"><use href="#icon-clipboard"></use></svg><span>Histórico de Empréstimos</span></a>
                     </li>
-                    
                     <li class="{% if request.resolver_match.url_name == 'novo_emprestimo' %}active{% endif %}">
-                        <a href="{% url 'novo_emprestimo' %}">
-                            <svg class="icon"><use href="#icon-helmet"></use></svg>
-                            <span>Novo Empréstimo</span>
-                        </a>
+                        <a href="{% url 'novo_emprestimo' %}"><svg class="icon"><use href="#icon-helmet"></use></svg><span>Novo Empréstimo</span></a>
                     </li>
                 </ul>
             </nav>
@@ -133,18 +101,16 @@
         </aside>
 
         <main class="content">
-            
-            {% block content %}
-            {% endblock %}
-
+            {% block content %}{% endblock %}
         </main>
     </div>
 
     {% if messages %}
         <div id="feedbackData" 
-             data-success-message="{% for message in messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }}{% if not forloop.last %} <br> {% endif %}{% endif %}{% endfor %}"
-             data-error-message="{% for message in messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }}{% if not forloop.last %} <br> {% endif %}{% endif %}{% endfor %}"
-        ></div>
+             style="display:none;"
+             data-success-message="{% for message in messages %}{% if message.tags == 'success' or message.tags == 'info' %}{{ message }}{% if not forloop.last %}<br>{% endif %}{% endif %}{% endfor %}"
+             data-error-message="{% for message in messages %}{% if message.tags == 'error' or message.tags == 'warning' %}{{ message }}{% if not forloop.last %}<br>{% endif %}{% endif %}{% endfor %}">
+        </div>
     {% endif %}
 
     <div class="modal-backdrop" id="feedbackModalBackdrop" style="display: none;"></div>
@@ -160,12 +126,10 @@
             <button type="button" class="btn-secondary" id="feedbackModalOkBtn">OK</button>
         </div>
     </div>
+
     <script src="{% static 'script.js' %}"></script>
-    
     <script src="https://unpkg.com/feather-icons"></script>
-    
-    {% block scripts %}
-    {% endblock scripts %}
+    {% block scripts %}{% endblock scripts %}
     
 </body>
 </html>
